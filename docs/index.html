@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Guitar Practice Timer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="A practice timer for guitarists that splits a session into focused blocks and enforces the break between them.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2315181F'/%3E%3Cpath d='M16 6.5a9.5 9.5 0 1 1-6 2.1' fill='none' stroke='%237FD1AE' stroke-width='2.8' stroke-linecap='round'/%3E%3Cpath d='M16 16V9.2' stroke='%23ECEEF3' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E">
+
+<style>
+  :root {
+    /* The app's own practice palette. The page starts where the app starts. */
+    --ground:    #11141A;
+    --raised:    #171B23;
+    --accent:    #7FD1AE;
+    --text:      #F2F3F7;
+    --muted:     #8A8F9C;
+    --hairline:  #2A2E3A;
+    --on-accent: #0E1116;
+
+    --ease: cubic-bezier(0.65, 0, 0.35, 1);
+    --fade: 550ms; /* the app cross-fades over exactly this */
+
+    --display: Georgia, "Iowan Old Style", "Times New Roman", serif;
+    --body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: ui-monospace, "Cascadia Code", "SF Mono", Consolas, monospace;
+
+    --measure: 54rem;  /* the page container */
+    --prose: 38rem;    /* running text, held near 70 characters a line */
+  }
+
+  /* The cooldown palette. Swapped wholesale, exactly as the app does it. */
+  body.resting {
+    --ground:   #2B1C14;
+    --raised:   #35241A;
+    --accent:   #E8A33D;
+    --muted:    #A2907F;
+    --hairline: #46321F;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--text);
+    font-family: var(--body);
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    transition: background-color var(--fade) var(--ease),
+                color var(--fade) var(--ease);
+  }
+
+  .wrap {
+    max-width: var(--measure);
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  section {
+    padding: 5.5rem 0;
+    border-bottom: 1px solid var(--hairline);
+    transition: border-color var(--fade) var(--ease);
+  }
+  section:last-of-type { border-bottom: 0; }
+
+  /* Mode label, set like the one in the app: mono, uppercase, wide, accented. */
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 1.25rem;
+    transition: color var(--fade) var(--ease);
+  }
+
+  h1, h2 {
+    font-family: var(--display);
+    font-weight: 400;
+    text-wrap: balance;
+    letter-spacing: -0.015em;
+    margin: 0 0 1rem;
+  }
+  h1 { font-size: clamp(2.3rem, 7vw, 3.4rem); line-height: 1.08; }
+  h2 { font-size: clamp(1.7rem, 4.5vw, 2.2rem); line-height: 1.15; }
+
+  /* The container is wide so the screenshots can breathe; the reading column
+     stays narrow so the prose does not run to 100+ characters a line. */
+  p, h1, h2, .cycle, .refs, .caveat, .ask, .checks { max-width: var(--prose); }
+
+  p { margin: 0 0 1.15rem; }
+  p:last-child { margin-bottom: 0; }
+
+  .lede {
+    font-size: 1.2rem;
+    line-height: 1.55;
+    color: var(--text);
+  }
+  .muted { color: var(--muted); transition: color var(--fade) var(--ease); }
+
+  /* Durations are set as clock readings wherever they appear. */
+  .clock {
+    font-family: var(--mono);
+    font-variant-numeric: tabular-nums;
+    color: var(--accent);
+    transition: color var(--fade) var(--ease);
+  }
+
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 3px; transition: color var(--fade) var(--ease); }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+
+  /* ---- hero ---- */
+  .hero { padding-top: 6.5rem; }
+  .hero h1 { margin-bottom: 1.5rem; }
+  .shots {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    margin: 3rem 0 0;
+  }
+  /* min-width:0 is load-bearing. Grid items default to min-width:auto, which
+     refuses to shrink below the image's intrinsic 588px and blows the track
+     wider than a phone viewport. */
+  .shots figure { margin: 0; min-width: 0; }
+  .shots img {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 5%;
+    box-shadow: 0 18px 50px rgb(0 0 0 / 0.5);
+  }
+  .shots figcaption {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 0.85rem;
+    transition: color var(--fade) var(--ease);
+  }
+
+  /* ---- the cycle ---- */
+  .cycle {
+    list-style: none;
+    margin: 2rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 1.6rem;
+  }
+  .cycle li {
+    display: grid;
+    grid-template-columns: 4.5rem 1fr;
+    gap: 1.25rem;
+    align-items: baseline;
+    min-width: 0;
+  }
+  .cycle li > * { min-width: 0; }
+  .cycle .clock { font-size: 0.95rem; text-align: right; }
+
+  /* ---- support ---- */
+  .buttons { display: flex; flex-wrap: wrap; gap: 0.85rem; margin-top: 2rem; }
+  .btn {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding: 0.85rem 1.4rem;
+    border-radius: 999px;
+    font-weight: 600;
+    text-decoration: none;
+    background: var(--accent);
+    color: var(--on-accent);
+    transition: background-color var(--fade) var(--ease), opacity 160ms ease;
+  }
+  .btn:hover { opacity: 0.86; }
+  .btn small {
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    opacity: 0.72;
+  }
+  .btn--ghost {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--hairline);
+    transition: border-color var(--fade) var(--ease), background-color 160ms ease;
+  }
+  .btn--ghost:hover { background: rgb(255 255 255 / 0.06); opacity: 1; }
+
+  /* The primary support action, set in the same uppercase mono as the mode
+     labels so it reads as the page's one loud element rather than a fourth
+     equal button. */
+  .btn--loud {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 1rem 1.6rem;
+  }
+
+  /* The ask. Sits directly above the buttons and carries the weight of the
+     lede, because it is the only place on the page that asks for anything. */
+  .ask {
+    font-size: 1.12rem;
+    line-height: 1.55;
+    text-wrap: pretty;
+    margin-top: 1.75rem;
+    padding-left: 1.1rem;
+    border-left: 2px solid var(--accent);
+    transition: border-color var(--fade) var(--ease);
+  }
+
+  /* ---- citations ---- */
+  .refs { margin: 2rem 0 0; padding: 0; list-style: none; display: grid; gap: 1.1rem; }
+  .refs li {
+    font-size: 0.86rem;
+    line-height: 1.5;
+    color: var(--muted);
+    padding-left: 1rem;
+    border-left: 2px solid var(--hairline);
+    transition: color var(--fade) var(--ease), border-color var(--fade) var(--ease);
+  }
+  .refs .who { color: var(--text); }
+
+  /* ---- verify ---- */
+  .checks { margin: 2rem 0 0; padding: 0; list-style: none; display: grid; gap: 1.5rem; }
+  .checks li { display: grid; gap: 0.3rem; min-width: 0; }
+  .checks .k {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    transition: color var(--fade) var(--ease);
+  }
+
+  pre {
+    margin: 0.9rem 0 0;
+    padding: 0.9rem 1rem;
+    background: var(--raised);
+    border-radius: 8px;
+    overflow-x: auto;           /* the command is long; the page must not scroll */
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    line-height: 1.5;
+    color: var(--text);
+    transition: background-color var(--fade) var(--ease);
+  }
+  pre code { font: inherit; }
+
+  .caveat {
+    margin-top: 2.5rem;
+    padding: 1.35rem 1.5rem;
+    background: var(--raised);
+    border-radius: 10px;
+    font-size: 0.92rem;
+    transition: background-color var(--fade) var(--ease);
+  }
+  .caveat p { margin-bottom: 0.8rem; }
+
+  footer {
+    padding: 3.5rem 0 5rem;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    transition: color var(--fade) var(--ease);
+  }
+  footer p { margin-bottom: 0.5rem; }
+
+  @media (max-width: 34rem) {
+    .shots { grid-template-columns: 1fr; gap: 2rem; }
+    .cycle li { grid-template-columns: 1fr; gap: 0.2rem; }
+    .cycle .clock { text-align: left; }
+    section { padding: 4rem 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition-duration: 1ms !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <section class="hero">
+    <p class="eyebrow">Practice</p>
+    <h1>The rest will help you play better and faster.</h1>
+    <p class="lede">A practice timer for guitarists that splits a session into short focused
+      blocks &mdash; and then enforces the break between them, because that break is where a
+      surprising amount of the learning actually happens.</p>
+    <p class="muted">Free, open source, and completely offline. It has no account, no
+      analytics, and no network code of any kind.</p>
+
+    <div class="shots">
+      <figure>
+        <img src="screenshot-practice.png" alt="The timer during practice: a mint dial reading 3:00, ready to start.">
+        <figcaption>Practice</figcaption>
+      </figure>
+      <figure>
+        <img src="screenshot-cooldown.png" alt="The timer during the cooldown: the whole window has shifted to warm amber, the skip button is greyed out and the hint reads unlocks in 56s.">
+        <figcaption>Cool down</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <p class="eyebrow">The cycle</p>
+    <h2>One block, one break, repeat.</h2>
+    <p>You set the practice length and start. When the block ends the app plays a two-note
+      chime, the entire window cross-fades from cool mint to warm amber, and the break begins
+      on its own &mdash; you don't have to remember to take it.</p>
+
+    <ul class="cycle">
+      <li><span class="clock">0:30&ndash;10:00</span>
+        <span>Practice. You choose the length; it defaults to <span class="clock">3:00</span>.</span></li>
+      <li><span class="clock">3:00</span>
+        <span>Cool down. Fixed, automatic, and the same every time.</span></li>
+      <li><span class="clock">60s</span>
+        <span>How long the break refuses to be skipped at all.</span></li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="eyebrow">The evidence</p>
+    <h2>Why the break earns its place.</h2>
+    <p>In 2019 a team at the US National Institutes of Health had people learn a five-element
+      finger-tapping sequence in alternating <span class="clock">10s</span> bouts of practice
+      and <span class="clock">10s</span> of rest, under magnetoencephalography. Early learning
+      was accounted for almost entirely by gains that appeared <em>across the rests</em>, not
+      within the practice bouts &mdash; and brain activity during each rest predicted how much
+      that particular break would give.</p>
+    <p>A later study on a digital piano found the effect is specific: players who practised a
+      different sequence during their break gained significantly less across it. Resting means
+      resting, not switching to another exercise.</p>
+
+    <ul class="refs">
+      <li><span class="who">B&ouml;nstrup et al. (2019).</span> A Rapid Form of Offline
+        Consolidation in Skill Learning. <em>Current Biology</em> 29(8), 1346&ndash;1351.
+        <a href="https://doi.org/10.1016/j.cub.2019.02.049">doi:10.1016/j.cub.2019.02.049</a></li>
+      <li><span class="who">B&ouml;nstrup et al. (2020).</span> Modelling micro-offline gains.
+        <em>npj Science of Learning</em> 5, 7.
+        <a href="https://doi.org/10.1038/s41539-020-0066-9">doi:10.1038/s41539-020-0066-9</a></li>
+      <li><span class="who">Simmons, Allen, Cash &amp; Duke (2019).</span> Effects of interleaved
+        activity during rest. <em>Psychology of Music</em> 47(1), 83&ndash;95.
+        <a href="https://doi.org/10.1177/0305735617735373">doi:10.1177/0305735617735373</a></li>
+      <li><span class="who">Das et al. (2025).</span> The counterpoint, included on purpose:
+        argues these gains reflect fatigue recovery and pre-planning rather than true offline
+        consolidation. <em>PNAS</em>.
+        <a href="https://doi.org/10.1073/pnas.2509233122">doi:10.1073/pnas.2509233122</a></li>
+    </ul>
+
+    <div class="caveat">
+      <p><strong>Two honest caveats.</strong></p>
+      <p>The strongest evidence sits at a timescale of <em>seconds</em>. This app enforces
+        <span class="clock">three minutes</span>, which is an extrapolation, not a finding.</p>
+      <p>And the 2025 PNAS paper above disputes the mechanism &mdash; though not that
+        performance improves coming out of a break. Either way, the break separately does the
+        uncontroversial job of keeping your hands out of a repetitive strain injury.</p>
+    </div>
+  </section>
+
+  <section id="rest">
+    <p class="eyebrow">Cool down</p>
+    <h2>A break you can't talk yourself out of.</h2>
+    <p>Every practice tool lets you skip the rest. That is the one thing this one won't do,
+      and it is deliberate &mdash; the break is not idle time between the useful parts, it
+      <em>is</em> one of the useful parts.</p>
+    <p>So during the cooldown the skip button stays locked for the first
+      <span class="clock">60</span> seconds, reset does nothing at all, and the length slider
+      is disabled until the break is over. There is no setting to turn any of that off, and
+      requests to add one get politely declined.</p>
+    <p class="muted">Put the guitar down. That is the whole feature.</p>
+  </section>
+
+  <section>
+    <p class="eyebrow">Get it</p>
+    <h2>Download</h2>
+    <p>One file. Nothing to install, no runtime to fetch first.</p>
+    <div class="buttons">
+      <a class="btn" href="https://github.com/Baracuda011/GuitarPracticeTimer/releases/latest">
+        Windows <small>x64 &middot; 32 MB</small></a>
+      <a class="btn btn--ghost" href="https://github.com/Baracuda011/GuitarPracticeTimer/releases/latest">
+        Linux <small>x64 &middot; 30 MB</small></a>
+    </div>
+    <p class="muted" style="margin-top:1.5rem">Android and iOS builds share the same timer core
+      and are in progress.</p>
+  </section>
+
+  <section>
+    <p class="eyebrow">Verify</p>
+    <h2>Is this safe?</h2>
+    <p>Windows will put up a warning the first time you run it. That is worth explaining
+      before you meet it, along with how to check this download yourself rather than
+      taking my word for anything.</p>
+
+    <ul class="checks">
+      <li>
+        <span class="k">The Windows warning</span>
+        <span>You'll see <em>&ldquo;Windows protected your PC &mdash; unknown publisher&rdquo;</em>.
+          Click <em>More info</em>, then <em>Run anyway</em>. SmartScreen shows that for any
+          program it hasn't seen before; it is not a report of something found. It appears
+          because the app isn't signed with a paid certificate, which is a purchase, not a
+          safety check.</span>
+      </li>
+      <li>
+        <span class="k">The source is public</span>
+        <span>All of it, and there isn't much &mdash; the whole timer is a few hundred lines.
+          You can read it in an afternoon.</span>
+      </li>
+      <li>
+        <span class="k">The builds are public too</span>
+        <span>Every release is compiled by GitHub, not on my machine, and carries a signed
+          attestation tying that exact file to the exact source it came from. Anyone can
+          check it:
+          <pre><code>gh attestation verify GuitarPracticeTimer-*-win-x64.zip \
+  --repo Baracuda011/GuitarPracticeTimer</code></pre></span>
+      </li>
+      <li>
+        <span class="k">Fingerprints</span>
+        <span>Each release ships <code>SHA256SUMS.txt</code>, so you can confirm the file you
+          downloaded is byte-for-byte the file that was published.</span>
+      </li>
+      <li>
+        <span class="k">It cannot phone home</span>
+        <span>The app contains no networking code of any kind &mdash; no account, no analytics,
+          no update check. That is not a promise about what it does with your data; there is
+          simply no code that could send any.</span>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="eyebrow">Support</p>
+    <h2>If it earned a coffee.</h2>
+    <p>The app is free and stays free. There is no paid tier planned, nothing is held back, and
+      it will never ask you for anything inside the app itself.</p>
+    <p class="ask">If this little tool helps you practise better, you can support its development
+      with any amount you like. No obligation &mdash; just keep practising.</p>
+    <div class="buttons">
+      <a class="btn btn--loud" href="STRIPE_URL_HERE">Support the project</a>
+      <a class="btn btn--ghost" href="PAYPAL_URL_HERE">Tip via PayPal</a>
+      <a class="btn btn--ghost" href="https://github.com/sponsors/Baracuda011">GitHub Sponsors</a>
+      <a class="btn btn--ghost" href="https://github.com/Baracuda011/GuitarPracticeTimer">Star the repo</a>
+    </div>
+  </section>
+
+  <footer>
+    <p>MIT licensed &middot; No telemetry &middot; No network access</p>
+    <p>Built by Nemanja Stankovic &middot;
+      <a href="https://github.com/Baracuda011/GuitarPracticeTimer">Source on GitHub</a></p>
+  </footer>
+
+</div>
+
+<script>
+  // The page ground shifts to the cooldown palette while the cooldown section
+  // holds the viewport, then shifts back — the same move the app makes, over
+  // the same 550ms. Nothing here is load-bearing: without JS the page simply
+  // stays in the practice palette throughout.
+  const rest = document.getElementById("rest");
+
+  if (rest && "IntersectionObserver" in window) {
+    const observer = new IntersectionObserver(
+      ([entry]) => document.body.classList.toggle("resting", entry.isIntersecting),
+      { rootMargin: "-40% 0px -40% 0px" }
+    );
+    observer.observe(rest);
+  }
+</script>
+</body>
+</html>
