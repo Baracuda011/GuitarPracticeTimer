@@ -4,8 +4,9 @@ namespace GuitarPracticeTimer.Core;
 public readonly record struct DialPoint(double X, double Y);
 
 /// <summary>
-/// The arc maths, kept free of any drawing framework so WPF, Avalonia and any
-/// future canvas can each build their own path object from the same numbers.
+/// The arc maths, kept free of any drawing framework so the Avalonia view today
+/// and any future canvas can each build their own path object from the same
+/// numbers.
 /// </summary>
 public static class DialGeometry
 {

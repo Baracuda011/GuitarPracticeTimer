@@ -9,12 +9,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Linux (x64) support.** The desktop app now builds, runs and ships for Linux
+  alongside Windows.
+- `GuitarPracticeTimer.Core`, a dependency-free project holding the timer state
+  machine, dial geometry and palettes, with 33 tests concentrated on the
+  cooldown enforcement rules.
+- `GuitarPracticeTimer.Ui`, the shared Avalonia view and view model, so future
+  mobile builds reuse the same rules and layout rather than reimplementing them.
+- `make_chime.py`, which generates `Assets/chime.wav` (G5 → C6) using only the
+  Python standard library, and `verify_assets.py`, which checks both generated
+  assets still match their generators.
+- Build provenance attestation and a `SHA256SUMS.txt` on every release, so a
+  download can be traced back to the source and workflow that produced it.
+- A project website under `docs/`, published with GitHub Pages, including an
+  "Is this safe?" section and support links.
 - Repository documentation and GitHub community files: `LICENSE` (MIT),
-  `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md`, issue and pull request
-  templates, and this changelog.
-- Continuous integration on `windows-latest`, plus a tagged release workflow
-  that publishes a zipped self-contained build with a SHA-256 checksum.
+  `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md`, `FUNDING.yml`, issue
+  and pull request templates, and this changelog.
 - `.gitignore`, `.gitattributes` and `.editorconfig`.
+
+### Changed
+
+- **Replaced WPF with [Avalonia](https://avaloniaui.net/)** and moved from
+  .NET 8 to .NET 10. WPF is Windows-only, which made every other platform
+  impossible.
+- The colour cross-fade is now built on Avalonia `BrushTransition`s rather than
+  an animated shared brush, keeping the original 550 ms cubic ease.
+- The end-of-block chime plays a generated WAV through miniaudio instead of
+  `Console.Beep`, which is Windows-only and throws elsewhere.
+- Title-bar glyphs are drawn as vector paths rather than set in Segoe MDL2
+  Assets, which exists only on Windows.
+- Published builds are trimmed and compressed: the executable went from 146 MB
+  to under 14 MB, and the full Windows payload from about 154 MB to 32 MB.
+- Continuous integration now builds and tests on Windows **and** Linux, and
+  verifies the generated assets by decoded content rather than by byte
+  comparison, which was sensitive to the zlib version rather than to the
+  generators.
+
+### Removed
+
+- The WPF project, superseded by the Avalonia build on every platform.
 
 ## [1.0.0] - 2026-08-15
 
