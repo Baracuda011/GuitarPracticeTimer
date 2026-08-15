@@ -2,28 +2,46 @@
 
 [![Build](https://github.com/Baracuda011/GuitarPracticeTimer/actions/workflows/build.yml/badge.svg)](https://github.com/Baracuda011/GuitarPracticeTimer/actions/workflows/build.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![.NET 8](https://img.shields.io/badge/.NET-8.0-512BD4?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/download)
-[![Platform: Windows](https://img.shields.io/badge/platform-Windows%2010%20%7C%2011-0078D6?logo=windows&logoColor=white)](#requirements)
+[![.NET 10](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/download)
+[![Platforms](https://img.shields.io/badge/platform-Windows%20%7C%20Linux-0078D6)](#platform-support)
 
 **A practice tool for guitarists.** It breaks your session into short, focused
 blocks of playing separated by real rest — the structure that learning research
 says gets you further than grinding a passage for an hour straight.
 
-Work a lick, a scale shape, a bar of a solo. When the block ends the app beeps,
-the window fades from cool mint to warm amber, and a **three-minute break starts
-automatically** — one you can't skip out of for the first minute. That locked
-minute is the whole design. Left to ourselves, mid-flow, we skip the break every
-time. The research says the break is where a lot of the improvement actually
-shows up.
+Work a lick, a scale shape, a bar of a solo. When the block ends the app plays a
+two-note chime, the window fades from cool mint to warm amber, and a
+**three-minute break starts automatically** — one you can't skip out of for the
+first minute. That locked minute is the whole design. Left to ourselves,
+mid-flow, we skip the break every time. The research says the break is where a
+lot of the improvement actually shows up.
 
-Built with WPF on .NET 8. No installer, no settings file, no telemetry, no
-network access. One window, one `.exe`.
+Built with [Avalonia](https://avaloniaui.net/) on .NET 10. No installer, no
+settings file, no telemetry, and no network code of any kind. One window, one
+binary.
 
-<!-- Add a screenshot here once you have one:
-![Guitar Practice Timer](docs/screenshot.png)
--->
+**[guitar practice timer website →](https://baracuda011.github.io/GuitarPracticeTimer/)**
+
+| Practice | Cool down |
+| --- | --- |
+| ![Practice mode](docs/screenshot-practice.png) | ![Cooldown mode](docs/screenshot-cooldown.png) |
 
 ---
+
+## Platform support
+
+| Platform | Status |
+| --- | --- |
+| **Windows 10/11 (x64)** | Supported — built and tested in CI |
+| **Linux (x64)** | Supported — built and tested in CI |
+| **Android** | In progress |
+| **iOS / iPadOS** | Planned |
+| **macOS** | Avalonia supports it; not yet built or tested here |
+
+The timer logic lives in a shared, UI-free `Core` project, and the Avalonia view
+in a shared `Ui` project, so the mobile builds reuse both rather than
+reimplementing the rules. Anything that makes the cooldown hard to escape is
+implemented once, in `Core`, and covered by tests.
 
 ## How to practise with it
 
@@ -139,7 +157,7 @@ Two other honest notes:
   block drains.
 - **Drift-free timing** — the timer stores a UTC deadline and subtracts from it
   rather than accumulating ticks, so it stays accurate even if the UI thread
-  stutters.
+  stutters, and survives an OS suspending the app.
 - **Keyboard driven** — start, pause and reset without putting the guitar down.
 - **Frameless window** — rounded custom chrome with a drop shadow; drag anywhere
   on the card to move it. Small enough to sit beside a tab or a score.
@@ -166,81 +184,116 @@ Two other honest notes:
 5. **Back to ready** — whether you skip or wait it out, the app returns to
    practice mode, reset to your slider length and **paused**.
 
-## Requirements
-
-- Windows 10 or 11 (x64)
-- [.NET 8 SDK](https://dotnet.microsoft.com/download) or newer to build
-  *(the published `.exe` is self-contained and needs no runtime installed)*
-- Python 3 — **only** if you want to regenerate the icon
-
 ## Install
 
-**Download it:** grab the latest zip from the
-[Releases page](https://github.com/Baracuda011/GuitarPracticeTimer/releases),
-extract it, and run `GuitarPracticeTimer.exe`. Nothing to install and no .NET
-runtime needed — it's all bundled.
+Download the latest build from the
+[Releases page](https://github.com/Baracuda011/GuitarPracticeTimer/releases):
 
-The executable is unsigned, so Windows SmartScreen will warn you the first time:
-*More info* → *Run anyway*. If you'd rather not trust an unsigned binary, build
-it yourself — it takes about two seconds.
+| Platform | File | Run it with |
+| --- | --- | --- |
+| Windows | `…-win-x64.zip` | extract, then `GuitarPracticeTimer.exe` |
+| Linux | `…-linux-x64.tar.gz` | extract, then `./GuitarPracticeTimer` |
+
+Nothing to install and no .NET runtime to fetch first — everything is bundled
+into the one binary.
+
+### Verifying your download
+
+Releases are built by GitHub Actions, not on a developer's machine, and carry a
+signed provenance attestation tying the binary to the exact source it came from:
+
+```bash
+gh attestation verify GuitarPracticeTimer-*-win-x64.zip \
+  --repo Baracuda011/GuitarPracticeTimer
+```
+
+Every release also ships `SHA256SUMS.txt`:
+
+```bash
+sha256sum -c SHA256SUMS.txt            # Linux
+Get-FileHash *.zip -Algorithm SHA256   # Windows
+```
+
+On first run Windows may ask you to confirm before opening a program it hasn't
+seen many people run yet — *More info* → *Run anyway*. That prompt reflects how
+widely a program has been downloaded, not anything found inside it.
+
+## Requirements
+
+- [.NET 10 SDK](https://dotnet.microsoft.com/download) to build
+  *(published binaries are self-contained and need no runtime installed)*
+- Python 3 — **only** to regenerate the icon or the chime
 
 ## Build and run
 
-```powershell
+```bash
 git clone https://github.com/Baracuda011/GuitarPracticeTimer.git
 cd GuitarPracticeTimer
-dotnet run
+dotnet run --project src/GuitarPracticeTimer.Desktop
 ```
 
-### Publishing a standalone executable
+Run the tests:
 
-```powershell
-dotnet publish -c Release -o publish
+```bash
+dotnet test
 ```
 
-Publish settings live in [`GuitarPracticeTimer.csproj`](GuitarPracticeTimer.csproj):
-self-contained, single-file, `win-x64`, no debug symbols. The result is
-`publish/GuitarPracticeTimer.exe` — it bundles the entire .NET runtime, so it's
-large (~150 MB) but runs on a clean Windows machine with nothing installed.
+### Publishing a standalone binary
 
-A handful of native WPF libraries (`wpfgfx_cor3.dll`, `PresentationNative_cor3.dll`,
-`D3DCompiler_47_cor3.dll`, `PenImc_cor3.dll`, `vcruntime140_cor3.dll`) are emitted
-next to the `.exe`. They're extracted at runtime and can be left alongside it, or
-shipped together as a folder.
-
-### Regenerating the icon
-
-[`make_icon.py`](make_icon.py) draws `Assets/app.ico` from scratch using nothing
-but the Python standard library — no Pillow, no ImageMagick. It renders a dark
-rounded square with a mint progress ring and a clock hand at 4× supersampling,
-box-downsamples for anti-aliasing, then hand-assembles the PNG chunks (with CRCs)
-and the multi-size `.ico` container itself.
-
-```powershell
-python make_icon.py
+```bash
+dotnet publish src/GuitarPracticeTimer.Desktop -c Release -r win-x64   -o publish/win-x64
+dotnet publish src/GuitarPracticeTimer.Desktop -c Release -r linux-x64 -o publish/linux-x64
 ```
 
-Sizes emitted: 16, 24, 32, 48, 64, 128, 256 px.
+Size settings live in
+[`GuitarPracticeTimer.Desktop.csproj`](src/GuitarPracticeTimer.Desktop/GuitarPracticeTimer.Desktop.csproj)
+and apply automatically whenever a runtime identifier is supplied: self-contained,
+single-file, trimmed and compressed. Trimming matters — it takes the executable
+from 82 MB to under 14 MB, with a full payload of about 32 MB including the
+native Skia and audio libraries.
+
+### Regenerating the generated assets
+
+Two assets are generated from scratch by scripts using **only the Python
+standard library** — no Pillow, no numpy, no ImageMagick:
+
+```bash
+python make_icon.py     # Assets/app.ico   — 16 to 256 px, hand-built PNG + ICO
+python make_chime.py    # Assets/chime.wav — G5 → C6, enveloped, 0.5 s
+python verify_assets.py # checks both still match their generators
+```
+
+CI runs `verify_assets.py` on every push. It compares the icon by **decoded
+pixels** rather than by bytes, because PNG data is zlib-compressed and zlib's
+output differs between versions — the same icon is 8142 bytes on one Python and
+8005 on another. The chime is compared byte for byte, which it can be because
+WAV is uncompressed.
 
 ## Project structure
 
 ```
 GuitarPracticeTimer/
-├── App.xaml / App.xaml.cs          Application entry, mode colour palettes
-├── MainWindow.xaml                 UI layout and control templates
-├── MainWindow.xaml.cs              Timer state machine, dial geometry, input
-├── GuitarPracticeTimer.csproj      Build + single-file publish settings
-├── make_icon.py                    Generates Assets/app.ico (stdlib only)
-├── Assets/
-│   └── app.ico
-└── .github/
-    ├── workflows/build.yml         CI: build, publish, verify the icon
-    ├── workflows/release.yml       Tagged releases with a SHA-256 checksum
-    ├── ISSUE_TEMPLATE/             Bug report and feature request forms
-    └── PULL_REQUEST_TEMPLATE.md
+├── src/
+│   ├── GuitarPracticeTimer.Core/      Timer rules, dial maths, palette — no UI framework
+│   │   ├── PracticeSession.cs         State machine; every cooldown rule lives here
+│   │   ├── SessionView.cs             One frame of display state
+│   │   ├── DialGeometry.cs            Arc maths, framework-free
+│   │   └── Palette.cs                 The two colour schemes
+│   ├── GuitarPracticeTimer.Ui/        Shared Avalonia UI, reused by every platform
+│   │   ├── TimerViewModel.cs          Drives the view from Core
+│   │   ├── Views/TimerView.axaml      Dial, buttons, slider
+│   │   └── Audio/Chime.cs             Cross-platform playback via miniaudio
+│   └── GuitarPracticeTimer.Desktop/   Window chrome, drag, keyboard shortcuts
+├── tests/
+│   └── GuitarPracticeTimer.Core.Tests/  33 tests, mostly on the cooldown rules
+├── docs/                              The website (GitHub Pages) and screenshots
+├── Assets/                            app.ico and chime.wav, both generated
+├── make_icon.py, make_chime.py, verify_assets.py
+└── .github/workflows/                 CI matrix, and releases with attestation
 ```
 
-Roughly 300 lines of C# and 300 lines of XAML. No third-party packages.
+Dependencies: Avalonia for the UI and [SoundFlow](https://github.com/LSXPrime/SoundFlow)
+for audio. `Core` has none at all.
 
 ## Customising it
 
@@ -248,49 +301,58 @@ Most of what you'd want to change is a constant or two. If you want to sit
 closer to the Bönstrup protocol, try a 20–30 second block with a 15 second
 break; for repertoire work, longer blocks with the full 3 minutes.
 
-| What                     | Where                                                                             | Default          |
-| ------------------------ | --------------------------------------------------------------------------------- | ---------------- |
-| Break length             | `CooldownTotal` in [`MainWindow.xaml.cs`](MainWindow.xaml.cs)                      | `180` s          |
-| Skip lock duration       | `CooldownLock` in [`MainWindow.xaml.cs`](MainWindow.xaml.cs)                       | `60` s           |
-| Practice range and step  | `Minimum` / `Maximum` / `TickFrequency` on `DurationSlider` in `MainWindow.xaml`   | 30–600 s, 10 s   |
-| Default block length     | `Value` on `DurationSlider` in `MainWindow.xaml`                                   | `180` s          |
-| Mode colours             | `PracticeBg` / `PracticeAccent` / `CooldownBg` / `CooldownAccent` in `App.xaml.cs` | mint / amber     |
-| Chime pitch and length   | `Beep()` in [`MainWindow.xaml.cs`](MainWindow.xaml.cs)                             | 784 Hz → 1047 Hz |
+| What | Where | Default |
+| --- | --- | --- |
+| Break length | `CooldownTotalSeconds` in [`PracticeSession.cs`](src/GuitarPracticeTimer.Core/PracticeSession.cs) | `180` s |
+| Skip lock duration | `CooldownLockSeconds` in [`PracticeSession.cs`](src/GuitarPracticeTimer.Core/PracticeSession.cs) | `60` s |
+| Practice range and step | `MinDurationSeconds` / `MaxDurationSeconds` / `DurationStepSeconds` | 30–600 s, 10 s |
+| Default block length | `DefaultDurationSeconds` | `180` s |
+| Mode colours | [`Palette.cs`](src/GuitarPracticeTimer.Core/Palette.cs) | mint / amber |
+| Fade duration | `FadeDuration` in [`Palette.cs`](src/GuitarPracticeTimer.Core/Palette.cs) | `550` ms |
+| Chime pitch and length | `G5` / `C6` / `NOTE_ONE` / `NOTE_TWO` in [`make_chime.py`](make_chime.py) | 784 Hz → 1047 Hz |
 
-If you change the slider range in XAML, update the `0:30` / `10:00` end labels
-just below it to match.
+If you change the slider range, update the `0:30` / `10:00` end labels in
+[`TimerView.axaml`](src/GuitarPracticeTimer.Ui/Views/TimerView.axaml) to match,
+and the `Duration` tests in `PracticeSessionTests.cs`.
 
 ## Implementation notes
 
 A few decisions that aren't obvious from a skim:
 
+- **The rules live in one place.** `PracticeSession` holds the entire state
+  machine with no UI framework attached, so desktop and mobile cannot drift on
+  the one behaviour the app exists to enforce. It is the most heavily tested
+  part of the codebase for exactly that reason.
 - **Deadline, not accumulation.** `_deadlineUtc` is set once when the timer
-  starts; every tick just measures how far away it still is. A dropped or late
-  frame costs display smoothness, never accuracy.
-- **Brushes built in code, not XAML.** `BgBrush` and `AccentBrush` are created in
-  `App.OnStartup` so they stay unfrozen and animatable. Every surface binds to
-  them with `DynamicResource`, so one `ColorAnimation` repaints the entire
-  window — background, dial, buttons, slider fill and thumb — in a single sweep.
-- **The dial is drawn, not composed.** `BuildArc` emits a `StreamGeometry` with a
-  single `ArcTo`, picking the large-arc flag past 180°, and clamps the sweep just
-  short of a full turn so a completed circle doesn't collapse to a zero-length
-  path.
-- **A `_ready` guard.** `DurationSlider_ValueChanged` fires during
-  `InitializeComponent()`, before the fields it touches are meaningful; the flag
-  keeps that early call from writing garbage into the timer state.
-- **The beep runs off-thread.** `Console.Beep` blocks for its full duration, so
-  it's dispatched to a task pool thread and wrapped in a `try`/`catch` — on a
-  machine with no usable speaker the colour change is still a complete signal.
+  starts; every tick just measures how far away it still is. A dropped frame
+  costs display smoothness, never accuracy — and on mobile, where the OS
+  suspends apps outright, a session resumed after a long gap recomputes
+  correctly instead of losing the ticks it never received.
+- **Colour changes are transitions, not animations.** Avalonia has no
+  equivalent of animating a shared unfrozen brush, so each surface declares a
+  `BrushTransition` and the view model simply assigns a new brush. One
+  assignment repaints the whole window over 550 ms.
+- **The dial is drawn, not composed.** `BuildArc` emits a `StreamGeometry` with
+  a single `ArcTo`, picking the large-arc flag past 180°, and clamps the sweep
+  just short of a full turn so a completed circle doesn't collapse to a
+  zero-length path.
+- **The chime is a generated file.** `Console.Beep` is Windows-only and throws
+  everywhere else, so the two notes are synthesised into a WAV by
+  `make_chime.py` and played through miniaudio. Every failure path is swallowed
+  on purpose: on a machine with no working audio the colour change is still a
+  complete signal.
+- **Title-bar glyphs are vector paths.** The original used Segoe MDL2 Assets,
+  which exists only on Windows and would render as empty boxes on Linux.
 
 ## Roadmap ideas
 
 Not implemented, but natural next steps for a practice tool:
 
+- **Android and iOS builds** on the shared `Core` and `Ui` projects
 - **Practice log** — blocks completed per day, and what you worked on
 - **Named drills** — label the block ("Am pentatonic, position 3") and keep a history
 - **Configurable long break** after N blocks
 - **A metronome pane**, with the tempo recorded alongside each block
-- Custom chime, or a sound file instead of `Console.Beep`
 - Remembering the last-used block length between runs
 - Always-on-top toggle, for practising alongside tab on screen
 
@@ -306,9 +368,15 @@ won't be merged — it's the entire point of the app.
 - [Security policy](SECURITY.md) — please report vulnerabilities privately
 - [Changelog](CHANGELOG.md)
 
-Every push and pull request is built on `windows-latest` with warnings treated
-as errors, and CI re-runs `make_icon.py` to confirm the committed icon still
-matches its generator byte for byte.
+Every push and pull request is built and tested on **both Windows and Linux**
+with warnings treated as errors, and CI re-runs the asset generators to confirm
+the committed icon and chime still match them.
+
+## Support
+
+The app is free and stays free. If it has made your practice better, there are
+[a few ways to support it](https://baracuda011.github.io/GuitarPracticeTimer/#support)
+— and if not, please just enjoy it.
 
 ## Licence
 
