@@ -6,61 +6,148 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: "Tag to build and release (e.g. v1.0.0)"
+        description: "Tag to build and release (e.g. v2.0.0)"
         required: true
 
 permissions:
-  contents: write
+  contents: read
+
+env:
+  DOTNET_NOLOGO: true
 
 jobs:
-  release:
-    name: Publish release binaries
-    runs-on: windows-latest
+  build:
+    name: Build ${{ matrix.rid }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - os: windows-latest
+            rid: win-x64
+          - os: ubuntu-latest
+            rid: linux-x64
 
     steps:
       - name: Check out
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref_name }}
 
-      - name: Set up .NET 8
+      - name: Set up .NET 10
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: "8.0.x"
+          dotnet-version: "10.0.x"
 
       - name: Publish
-        run: dotnet publish --configuration Release --output publish
+        run: >
+          dotnet publish src/GuitarPracticeTimer.Desktop/GuitarPracticeTimer.Desktop.csproj
+          --configuration Release
+          --runtime ${{ matrix.rid }}
+          --output publish/${{ matrix.rid }}
 
-      - name: Package
+      - name: Package (Windows)
+        if: matrix.rid == 'win-x64'
         shell: pwsh
         run: |
           $tag = "${{ github.event.inputs.tag }}"
           if (-not $tag) { $tag = "${{ github.ref_name }}" }
-          $name = "GuitarPracticeTimer-$tag-win-x64"
-          Compress-Archive -Path publish/* -DestinationPath "$name.zip"
-          # Checksum so people can verify the download against the release notes.
-          (Get-FileHash "$name.zip" -Algorithm SHA256).Hash |
-            Out-File "$name.zip.sha256" -Encoding ascii
-          "ZIP_NAME=$name" | Out-File $env:GITHUB_ENV -Append
+          New-Item -ItemType Directory -Force dist | Out-Null
+          Compress-Archive -Path publish/win-x64/* -DestinationPath "dist/GuitarPracticeTimer-$tag-win-x64.zip"
+
+      - name: Package (Linux)
+        if: matrix.rid == 'linux-x64'
+        shell: bash
+        run: |
+          tag="${{ github.event.inputs.tag }}"
+          [ -z "$tag" ] && tag="${{ github.ref_name }}"
+          mkdir -p dist
+          chmod +x publish/linux-x64/GuitarPracticeTimer
+          tar -czf "dist/GuitarPracticeTimer-$tag-linux-x64.tar.gz" -C publish/linux-x64 .
+
+      - name: Upload package
+        uses: actions/upload-artifact@v4
+        with:
+          name: package-${{ matrix.rid }}
+          path: dist/
+          if-no-files-found: error
+
+  release:
+    name: Attest, checksum and publish
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write      # create the release
+      id-token: write      # sign the provenance attestation
+      attestations: write  # record it against the repository
+
+    steps:
+      - name: Collect packages
+        uses: actions/download-artifact@v4
+        with:
+          pattern: package-*
+          merge-multiple: true
+          path: dist
+
+      # A cryptographic record that these exact files were produced by this
+      # workflow, from this commit, on GitHub's runners. Anyone can check it:
+      #   gh attestation verify <file> --repo Baracuda011/GuitarPracticeTimer
+      # It proves the download matches the public source, which a code-signing
+      # certificate on its own does not.
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: dist/*
+
+      - name: Checksums
+        shell: bash
+        run: |
+          cd dist
+          sha256sum * > SHA256SUMS.txt
+          cat SHA256SUMS.txt
 
       - name: Create GitHub release
         uses: softprops/action-gh-release@v2
         with:
-          files: |
-            ${{ env.ZIP_NAME }}.zip
-            ${{ env.ZIP_NAME }}.zip.sha256
+          files: dist/*
           generate_release_notes: true
           draft: true
           body: |
             ## Guitar Practice Timer
 
-            Download the zip below, extract it, and run `GuitarPracticeTimer.exe`.
-            No installation and no .NET runtime required — everything is bundled.
+            | Platform | Download |
+            | --- | --- |
+            | Windows 10/11 (x64) | `…-win-x64.zip` — extract and run `GuitarPracticeTimer.exe` |
+            | Linux (x64) | `…-linux-x64.tar.gz` — extract and run `./GuitarPracticeTimer` |
 
-            The executable is **unsigned**, so Windows SmartScreen will warn on
-            first run: *More info* → *Run anyway*. If you would rather not trust
-            an unsigned binary, build it yourself from source — see the README.
+            Nothing to install and no .NET runtime to fetch first — everything is
+            bundled into the one binary.
 
-            Verify your download against `.sha256`:
+            ### Verifying this download
 
-            ```powershell
-            Get-FileHash GuitarPracticeTimer-*-win-x64.zip -Algorithm SHA256
+            **Provenance.** These files were built by GitHub Actions from this
+            repository's source, and carry a signed attestation proving it:
+
             ```
+            gh attestation verify GuitarPracticeTimer-*-win-x64.zip \
+              --repo Baracuda011/GuitarPracticeTimer
+            ```
+
+            **Checksums.** `SHA256SUMS.txt` lists a fingerprint for every file:
+
+            ```
+            sha256sum -c SHA256SUMS.txt          # Linux
+            Get-FileHash *.zip -Algorithm SHA256 # Windows
+            ```
+
+            ### A note on the Windows warning
+
+            The executable is **unsigned**, so SmartScreen will warn the first
+            time you run it: *More info* → *Run anyway*. That warning appears for
+            any program Windows has not seen before; it is not a report of
+            anything found. If you would rather not trust an unsigned binary, the
+            attestation above ties it to source you can read, or you can build it
+            yourself — see the README.
+
+            The app has no networking code of any kind, so it cannot send
+            anything anywhere.

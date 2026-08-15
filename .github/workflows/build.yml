@@ -8,6 +8,7 @@ on:
       - "LICENSE"
       - ".gitignore"
       - ".gitattributes"
+      - "docs/**"
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -19,19 +20,31 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+
 jobs:
   build:
-    name: Build (windows-latest)
-    runs-on: windows-latest
+    name: Build & test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            rid: win-x64
+          - os: ubuntu-latest
+            rid: linux-x64
 
     steps:
       - name: Check out
         uses: actions/checkout@v4
 
-      - name: Set up .NET 8
+      - name: Set up .NET 10
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: "8.0.x"
+          dotnet-version: "10.0.x"
 
       - name: Restore
         run: dotnet restore
@@ -39,19 +52,35 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release --no-restore -warnaserror
 
-      - name: Publish self-contained single file
-        run: dotnet publish --configuration Release --output publish
+      - name: Test
+        run: dotnet test --configuration Release --no-build --verbosity normal
+
+      # Proves the timer actually publishes for this platform, and surfaces
+      # trimming warnings — which only appear at publish time, never at build.
+      - name: Publish
+        run: >
+          dotnet publish src/GuitarPracticeTimer.Desktop/GuitarPracticeTimer.Desktop.csproj
+          --configuration Release
+          --runtime ${{ matrix.rid }}
+          --output publish/${{ matrix.rid }}
+
+      - name: Report payload size
+        shell: bash
+        run: du -sh publish/${{ matrix.rid }} && ls -la publish/${{ matrix.rid }}
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: GuitarPracticeTimer-win-x64
-          path: publish/
+          name: GuitarPracticeTimer-${{ matrix.rid }}
+          path: publish/${{ matrix.rid }}/
           retention-days: 14
           if-no-files-found: error
 
-  icon:
-    name: Icon generator is reproducible
+  generators:
+    name: Generated assets are reproducible
+    # Pinned to Windows because that is where the committed assets were
+    # generated. zlib output can differ between platforms, which would fail
+    # this check for a reason that has nothing to do with the generators.
     runs-on: windows-latest
 
     steps:
@@ -63,14 +92,16 @@ jobs:
         with:
           python-version: "3.x"
 
-      - name: Regenerate the icon
-        run: python make_icon.py
+      - name: Regenerate the icon and the chime
+        run: |
+          python make_icon.py
+          python make_chime.py
 
-      - name: Fail if the committed icon is out of date
+      - name: Fail if either committed asset is out of date
         shell: pwsh
         run: |
-          git diff --exit-code -- Assets/app.ico
+          git diff --exit-code -- Assets/app.ico Assets/chime.wav
           if ($LASTEXITCODE -ne 0) {
-            Write-Error "Assets/app.ico differs from make_icon.py output. Run 'python make_icon.py' and commit the result."
+            Write-Error "Assets/ differs from its generator output. Run 'python make_icon.py' and 'python make_chime.py', then commit the result."
             exit 1
           }
