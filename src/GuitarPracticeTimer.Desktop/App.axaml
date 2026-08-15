@@ -1,0 +1,11 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="GuitarPracticeTimer.Desktop.App"
+             RequestedThemeVariant="Dark">
+             <!-- The app paints its own palette; Dark only keeps stray Fluent
+                  defaults (tooltips, focus adorners) from flashing white. -->
+
+    <Application.Styles>
+        <FluentTheme />
+    </Application.Styles>
+</Application>

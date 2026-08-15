@@ -1,0 +1,82 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:GuitarPracticeTimer.Ui"
+        xmlns:views="using:GuitarPracticeTimer.Ui.Views"
+        x:Class="GuitarPracticeTimer.Desktop.MainWindow"
+        x:DataType="vm:TimerViewModel"
+        Title="Guitar Practice Timer"
+        Icon="/Assets/app.ico"
+        ShowInTaskbar="True"
+        Width="360" Height="596"
+        CanResize="False"
+        WindowDecorations="None"
+        TransparencyLevelHint="Transparent"
+        Background="Transparent"
+        WindowStartupLocation="CenterScreen">
+
+    <Window.Resources>
+        <SolidColorBrush x:Key="TextMuted" Color="#8A8F9C"/>
+
+        <!-- Title bar glyph button -->
+        <ControlTheme x:Key="TitleBtn" TargetType="Button">
+            <Setter Property="Width" Value="30"/>
+            <Setter Property="Height" Value="26"/>
+            <Setter Property="Foreground" Value="#7E838F"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border Name="Bd" CornerRadius="7" Background="#00FFFFFF">
+                        <ContentPresenter Content="{TemplateBinding Content}"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+            <Style Selector="^:pointerover /template/ Border#Bd">
+                <Setter Property="Background" Value="#1AFFFFFF"/>
+            </Style>
+            <Style Selector="^:pointerover">
+                <Setter Property="Foreground" Value="#EDEFF4"/>
+            </Style>
+        </ControlTheme>
+    </Window.Resources>
+
+    <Border Name="Chrome"
+            CornerRadius="18" Margin="12"
+            Background="{Binding Background}"
+            BorderBrush="#26FFFFFF" BorderThickness="1"
+            BoxShadow="0 5 26 0 #8C000000"
+            PointerPressed="Chrome_Drag">
+        <Border.Transitions>
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.55" Easing="CubicEaseInOut"/>
+            </Transitions>
+        </Border.Transitions>
+
+        <Grid Margin="22,12,22,20" RowDefinitions="Auto,*">
+
+            <!-- Title bar -->
+            <Grid Grid.Row="0">
+                <TextBlock Text="Guitar Practice Timer" FontSize="11.5"
+                           VerticalAlignment="Center"
+                           Foreground="{StaticResource TextMuted}"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <!-- Drawn rather than set in Segoe MDL2 Assets, which exists only on Windows. -->
+                    <Button Theme="{StaticResource TitleBtn}"
+                            ToolTip.Tip="Minimise" Click="Minimise_Click">
+                        <Path Data="M 0,0 H 10" Stroke="{Binding $parent[Button].Foreground}"
+                              StrokeThickness="1"/>
+                    </Button>
+                    <Button Theme="{StaticResource TitleBtn}"
+                            ToolTip.Tip="Close" Click="Close_Click">
+                        <Path Data="M 0,0 L 9,9 M 9,0 L 0,9"
+                              Stroke="{Binding $parent[Button].Foreground}"
+                              StrokeThickness="1"/>
+                    </Button>
+                </StackPanel>
+            </Grid>
+
+            <views:TimerView Grid.Row="1"/>
+        </Grid>
+    </Border>
+</Window>

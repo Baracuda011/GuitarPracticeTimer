@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/GuitarPracticeTimer.Core/GuitarPracticeTimer.Core.csproj" />
+    <Project Path="src/GuitarPracticeTimer.Desktop/GuitarPracticeTimer.Desktop.csproj" />
+    <Project Path="src/GuitarPracticeTimer.Ui/GuitarPracticeTimer.Ui.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/GuitarPracticeTimer.Core.Tests/GuitarPracticeTimer.Core.Tests.csproj" />
+  </Folder>
+</Solution>

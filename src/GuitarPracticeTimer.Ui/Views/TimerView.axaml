@@ -1,0 +1,259 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:GuitarPracticeTimer.Ui"
+             x:Class="GuitarPracticeTimer.Ui.Views.TimerView"
+             x:DataType="vm:TimerViewModel">
+
+    <UserControl.Resources>
+
+        <SolidColorBrush x:Key="TextPrimary" Color="#F2F3F7"/>
+        <SolidColorBrush x:Key="TextMuted"   Color="#8A8F9C"/>
+        <SolidColorBrush x:Key="Hairline"    Color="#2A2E3A"/>
+
+        <!-- Primary pill button: filled with the current mode accent -->
+        <ControlTheme x:Key="PillPrimary" TargetType="Button">
+            <Setter Property="Height" Value="46"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#0E1116"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="Background" Duration="0:0:0.55" Easing="CubicEaseInOut"/>
+                </Transitions>
+            </Setter>
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border Name="Bd" CornerRadius="23"
+                            Background="{TemplateBinding Background}">
+                        <ContentPresenter Content="{TemplateBinding Content}"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+            <Style Selector="^:pointerover /template/ Border#Bd">
+                <Setter Property="Opacity" Value="0.86"/>
+            </Style>
+            <Style Selector="^:pressed /template/ Border#Bd">
+                <Setter Property="Opacity" Value="0.72"/>
+            </Style>
+            <Style Selector="^:disabled /template/ Border#Bd">
+                <Setter Property="Opacity" Value="0.22"/>
+            </Style>
+            <Style Selector="^:disabled">
+                <Setter Property="Cursor" Value="Arrow"/>
+            </Style>
+        </ControlTheme>
+
+        <!-- Secondary outline pill -->
+        <ControlTheme x:Key="PillGhost" TargetType="Button">
+            <Setter Property="Height" Value="46"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Foreground" Value="#C9CDD8"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border Name="Bd" CornerRadius="23" Background="#00FFFFFF"
+                            BorderBrush="#33FFFFFF" BorderThickness="1">
+                        <ContentPresenter Content="{TemplateBinding Content}"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+            <Style Selector="^:pointerover /template/ Border#Bd">
+                <Setter Property="Background" Value="#14FFFFFF"/>
+            </Style>
+            <Style Selector="^:pressed /template/ Border#Bd">
+                <Setter Property="Background" Value="#22FFFFFF"/>
+            </Style>
+            <Style Selector="^:disabled /template/ Border#Bd">
+                <Setter Property="Opacity" Value="0.25"/>
+            </Style>
+            <Style Selector="^:disabled">
+                <Setter Property="Cursor" Value="Arrow"/>
+            </Style>
+        </ControlTheme>
+
+        <!-- Slider: 4px track, accent fill, accent thumb -->
+        <ControlTheme x:Key="TrackFill" TargetType="RepeatButton">
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border Height="4" CornerRadius="2" VerticalAlignment="Center"
+                            Background="{Binding $parent[Slider].Foreground}"/>
+                </ControlTemplate>
+            </Setter>
+        </ControlTheme>
+
+        <ControlTheme x:Key="TrackEmpty" TargetType="RepeatButton">
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border Height="4" CornerRadius="2" VerticalAlignment="Center"
+                            Background="#1FFFFFFF"/>
+                </ControlTemplate>
+            </Setter>
+        </ControlTheme>
+
+        <ControlTheme x:Key="SliderThumb" TargetType="Thumb">
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Panel Width="20" Height="20" Background="#00FFFFFF">
+                        <Ellipse Name="Halo" Width="20" Height="20" Opacity="0"
+                                 Fill="{Binding $parent[Slider].Foreground}"/>
+                        <Ellipse Width="14" Height="14"
+                                 Fill="{Binding $parent[Slider].Foreground}"/>
+                    </Panel>
+                </ControlTemplate>
+            </Setter>
+            <Style Selector="^:pointerover /template/ Ellipse#Halo">
+                <Setter Property="Opacity" Value="0.28"/>
+            </Style>
+            <Style Selector="^:pressed /template/ Ellipse#Halo">
+                <Setter Property="Opacity" Value="0.38"/>
+            </Style>
+        </ControlTheme>
+
+        <ControlTheme x:Key="FlatSlider" TargetType="Slider">
+            <Setter Property="Height" Value="22"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <!-- Foreground carries the accent down to the track and thumb, which
+                 cannot reach the view model from inside a control template. -->
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="Foreground" Duration="0:0:0.55" Easing="CubicEaseInOut"/>
+                </Transitions>
+            </Setter>
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Panel Background="#00FFFFFF">
+                        <Track Name="PART_Track"
+                               Minimum="{TemplateBinding Minimum}"
+                               Maximum="{TemplateBinding Maximum}"
+                               Value="{TemplateBinding Value, Mode=TwoWay}"
+                               Orientation="Horizontal">
+                            <Track.DecreaseButton>
+                                <RepeatButton Name="PART_DecreaseButton"
+                                              Theme="{StaticResource TrackFill}"/>
+                            </Track.DecreaseButton>
+                            <Track.IncreaseButton>
+                                <RepeatButton Name="PART_IncreaseButton"
+                                              Theme="{StaticResource TrackEmpty}"/>
+                            </Track.IncreaseButton>
+                            <Track.Thumb>
+                                <Thumb Theme="{StaticResource SliderThumb}"/>
+                            </Track.Thumb>
+                        </Track>
+                    </Panel>
+                </ControlTemplate>
+            </Setter>
+            <Style Selector="^:disabled">
+                <Setter Property="Opacity" Value="0.3"/>
+                <Setter Property="Cursor" Value="Arrow"/>
+            </Style>
+        </ControlTheme>
+
+    </UserControl.Resources>
+
+    <Grid RowDefinitions="*,Auto,Auto">
+
+        <!-- Dial -->
+        <StackPanel Grid.Row="0" VerticalAlignment="Center">
+
+            <TextBlock Text="{Binding Mode}"
+                       HorizontalAlignment="Center"
+                       FontSize="11.5" FontWeight="Bold"
+                       Foreground="{Binding Accent}"
+                       Margin="0,4,0,14">
+                <TextBlock.Transitions>
+                    <Transitions>
+                        <BrushTransition Property="Foreground" Duration="0:0:0.55" Easing="CubicEaseInOut"/>
+                    </Transitions>
+                </TextBlock.Transitions>
+            </TextBlock>
+
+            <Panel Width="228" Height="228" HorizontalAlignment="Center">
+                <Ellipse Width="200" Height="200" Stroke="#FFFFFF" Opacity="0.07"
+                         StrokeThickness="11"/>
+                <Path Data="{Binding Arc}"
+                      Stroke="{Binding Accent}" StrokeThickness="11"
+                      StrokeLineCap="Round">
+                    <Path.Transitions>
+                        <Transitions>
+                            <BrushTransition Property="Stroke" Duration="0:0:0.55" Easing="CubicEaseInOut"/>
+                        </Transitions>
+                    </Path.Transitions>
+                </Path>
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <TextBlock Text="{Binding Time}"
+                               HorizontalAlignment="Center"
+                               FontSize="64" FontWeight="Light"
+                               Foreground="{StaticResource TextPrimary}"
+                               FontFeatures="+tnum"
+                               Margin="0,0,0,-4"/>
+                    <TextBlock Text="{Binding Status}"
+                               HorizontalAlignment="Center"
+                               FontSize="12"
+                               Foreground="{StaticResource TextMuted}"/>
+                </StackPanel>
+            </Panel>
+        </StackPanel>
+
+        <!-- Controls -->
+        <StackPanel Grid.Row="1" Margin="0,10,0,0">
+            <Grid ColumnDefinitions="*,10,112">
+                <Button Name="PrimaryButton" Grid.Column="0"
+                        Theme="{StaticResource PillPrimary}"
+                        Background="{Binding Accent}"
+                        Content="{Binding PrimaryLabel}"
+                        IsEnabled="{Binding PrimaryEnabled}"
+                        HorizontalAlignment="Stretch"
+                        Click="Primary_Click"/>
+                <Button Name="ResetButton" Grid.Column="2"
+                        Theme="{StaticResource PillGhost}"
+                        Content="Reset"
+                        IsEnabled="{Binding ResetEnabled}"
+                        HorizontalAlignment="Stretch"
+                        Click="Reset_Click"/>
+            </Grid>
+
+            <TextBlock Text="{Binding Hint}"
+                       HorizontalAlignment="Center" Margin="0,10,0,0"
+                       FontSize="12" Foreground="{StaticResource TextMuted}"/>
+        </StackPanel>
+
+        <!-- Duration -->
+        <StackPanel Grid.Row="2" Margin="0,18,0,0">
+            <Border Height="1" Background="{StaticResource Hairline}"
+                    Margin="0,0,0,16"/>
+            <Grid Margin="0,0,0,6">
+                <TextBlock Text="Practice length" FontSize="12"
+                           Foreground="{StaticResource TextMuted}"/>
+                <TextBlock Text="{Binding DurationLabel}"
+                           HorizontalAlignment="Right" FontSize="12"
+                           FontWeight="SemiBold"
+                           Foreground="{StaticResource TextPrimary}"
+                           FontFeatures="+tnum"/>
+            </Grid>
+            <Slider Theme="{StaticResource FlatSlider}"
+                    Foreground="{Binding Accent}"
+                    Minimum="{Binding MinDuration}"
+                    Maximum="{Binding MaxDuration}"
+                    Value="{Binding DurationSeconds, Mode=TwoWay}"
+                    TickFrequency="{Binding DurationStep}"
+                    IsSnapToTickEnabled="True"
+                    SmallChange="10" LargeChange="30"
+                    IsEnabled="{Binding DurationEnabled}"/>
+            <Grid Margin="0,4,0,0">
+                <TextBlock Text="0:30" FontSize="10.5"
+                           Foreground="{StaticResource TextMuted}" Opacity="0.75"/>
+                <TextBlock Text="10:00" HorizontalAlignment="Right" FontSize="10.5"
+                           Foreground="{StaticResource TextMuted}" Opacity="0.75"/>
+            </Grid>
+        </StackPanel>
+
+    </Grid>
+</UserControl>
