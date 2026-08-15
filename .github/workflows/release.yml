@@ -140,14 +140,12 @@ jobs:
             Get-FileHash *.zip -Algorithm SHA256 # Windows
             ```
 
-            ### A note on the Windows warning
+            ### On first run
 
-            The executable is **unsigned**, so SmartScreen will warn the first
-            time you run it: *More info* → *Run anyway*. That warning appears for
-            any program Windows has not seen before; it is not a report of
-            anything found. If you would rather not trust an unsigned binary, the
-            attestation above ties it to source you can read, or you can build it
-            yourself — see the README.
+            Windows may ask you to confirm before opening a program it has not
+            seen many people run yet — choose *More info* → *Run anyway*. That
+            prompt reflects how widely a program has been downloaded so far,
+            not anything found inside it.
 
             The app has no networking code of any kind, so it cannot send
             anything anywhere.
