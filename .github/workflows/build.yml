@@ -1,0 +1,76 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "**/*.md"
+      - "LICENSE"
+      - ".gitignore"
+      - ".gitattributes"
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build (windows-latest)
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore -warnaserror
+
+      - name: Publish self-contained single file
+        run: dotnet publish --configuration Release --output publish
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: GuitarPracticeTimer-win-x64
+          path: publish/
+          retention-days: 14
+          if-no-files-found: error
+
+  icon:
+    name: Icon generator is reproducible
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Regenerate the icon
+        run: python make_icon.py
+
+      - name: Fail if the committed icon is out of date
+        shell: pwsh
+        run: |
+          git diff --exit-code -- Assets/app.ico
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "Assets/app.ico differs from make_icon.py output. Run 'python make_icon.py' and commit the result."
+            exit 1
+          }

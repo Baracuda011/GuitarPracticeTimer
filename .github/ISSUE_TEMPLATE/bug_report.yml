@@ -1,0 +1,111 @@
+name: Bug report
+description: Something in the timer doesn't behave the way it should
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to file this. A couple of notes first:
+
+        - The 60-second skip lock on the cooldown is **intended behaviour**, not a
+          bug. See the README for why.
+        - For a security issue, please use the
+          [security policy](../blob/main/SECURITY.md) instead of a public issue.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you expect the timer to do, and what did it do instead?
+      placeholder: |
+        I set a 2 minute block and hit Start. When it reached 0:00 the window
+        turned amber but the chime never played.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: The exact sequence, including slider position and which keys or buttons you used.
+      placeholder: |
+        1. Drag the slider to 2:00
+        2. Press Space
+        3. Wait for the block to elapse
+        4. ...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Which mode was the app in?
+      options:
+        - Practice — ready (not started)
+        - Practice — running
+        - Practice — paused
+        - Cool down — within the first 60 seconds (skip locked)
+        - Cool down — after 60 seconds (skip unlocked)
+        - During the transition between modes
+        - Not sure
+    validations:
+      required: true
+
+  - type: dropdown
+    id: how-run
+    attributes:
+      label: How are you running it?
+      options:
+        - The published GuitarPracticeTimer.exe from Releases
+        - A self-contained build I published myself
+        - dotnet run from source
+    validations:
+      required: true
+
+  - type: input
+    id: windows-version
+    attributes:
+      label: Windows version
+      description: "`winver` gives you this — e.g. Windows 11 Pro 24H2 (26100.2033)"
+      placeholder: Windows 11 Pro 24H2
+    validations:
+      required: true
+
+  - type: input
+    id: dotnet-version
+    attributes:
+      label: .NET SDK version
+      description: "Output of `dotnet --version`. Leave blank if you're running the published .exe."
+      placeholder: "8.0.404"
+    validations:
+      required: false
+
+  - type: textarea
+    id: display
+    attributes:
+      label: Display setup
+      description: >
+        Only relevant for layout, scaling or rendering problems — display scaling
+        percentage, resolution, and whether you're on multiple monitors.
+      placeholder: "27\" 4K at 150% scaling, second monitor at 100%"
+    validations:
+      required: false
+
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Screenshot
+      description: >
+        If anything looks wrong on screen, a picture of the window mid-failure is
+        worth more than a description. Drag the image in here.
+    validations:
+      required: false
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else
+      description: Exception text, how often it happens, anything you've already ruled out.
+    validations:
+      required: false

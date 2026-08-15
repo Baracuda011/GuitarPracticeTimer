@@ -1,0 +1,66 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*.*.*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to build and release (e.g. v1.0.0)"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Publish release binaries
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Publish
+        run: dotnet publish --configuration Release --output publish
+
+      - name: Package
+        shell: pwsh
+        run: |
+          $tag = "${{ github.event.inputs.tag }}"
+          if (-not $tag) { $tag = "${{ github.ref_name }}" }
+          $name = "GuitarPracticeTimer-$tag-win-x64"
+          Compress-Archive -Path publish/* -DestinationPath "$name.zip"
+          # Checksum so people can verify the download against the release notes.
+          (Get-FileHash "$name.zip" -Algorithm SHA256).Hash |
+            Out-File "$name.zip.sha256" -Encoding ascii
+          "ZIP_NAME=$name" | Out-File $env:GITHUB_ENV -Append
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            ${{ env.ZIP_NAME }}.zip
+            ${{ env.ZIP_NAME }}.zip.sha256
+          generate_release_notes: true
+          draft: true
+          body: |
+            ## Guitar Practice Timer
+
+            Download the zip below, extract it, and run `GuitarPracticeTimer.exe`.
+            No installation and no .NET runtime required — everything is bundled.
+
+            The executable is **unsigned**, so Windows SmartScreen will warn on
+            first run: *More info* → *Run anyway*. If you would rather not trust
+            an unsigned binary, build it yourself from source — see the README.
+
+            Verify your download against `.sha256`:
+
+            ```powershell
+            Get-FileHash GuitarPracticeTimer-*-win-x64.zip -Algorithm SHA256
+            ```

@@ -1,0 +1,10 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Question or practice-routine discussion
+    url: https://github.com/Baracuda011/GuitarPracticeTimer/discussions
+    about: >
+      Questions about how to use the app, or how to structure a practice session
+      around it. Not a bug — start here.
+  - name: Report a security vulnerability
+    url: https://github.com/Baracuda011/GuitarPracticeTimer/security/advisories/new
+    about: Please report security issues privately, not as a public issue.

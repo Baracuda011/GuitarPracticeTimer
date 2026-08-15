@@ -1,0 +1,12 @@
+version: 2
+updates:
+  # The app itself has no NuGet dependencies, so the only thing worth watching
+  # is the actions used by the workflows.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    commit-message:
+      prefix: "ci"
+    labels:
+      - "dependencies"
