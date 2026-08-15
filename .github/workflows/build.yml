@@ -77,11 +77,8 @@ jobs:
           if-no-files-found: error
 
   generators:
-    name: Generated assets are reproducible
-    # Pinned to Windows because that is where the committed assets were
-    # generated. zlib output can differ between platforms, which would fail
-    # this check for a reason that has nothing to do with the generators.
-    runs-on: windows-latest
+    name: Generated assets match their generators
+    runs-on: ubuntu-latest
 
     steps:
       - name: Check out
@@ -92,16 +89,9 @@ jobs:
         with:
           python-version: "3.x"
 
-      - name: Regenerate the icon and the chime
-        run: |
-          python make_icon.py
-          python make_chime.py
-
-      - name: Fail if either committed asset is out of date
-        shell: pwsh
-        run: |
-          git diff --exit-code -- Assets/app.ico Assets/chime.wav
-          if ($LASTEXITCODE -ne 0) {
-            Write-Error "Assets/ differs from its generator output. Run 'python make_icon.py' and 'python make_chime.py', then commit the result."
-            exit 1
-          }
+      # Compares the icon by decoded pixels rather than by bytes. PNG data is
+      # zlib-compressed and zlib's output differs between versions, so the same
+      # icon is 8142 bytes on one Python and 8005 on another — a byte
+      # comparison fails for a reason unrelated to whether the icon is correct.
+      - name: Verify Assets/ against make_icon.py and make_chime.py
+        run: python verify_assets.py
