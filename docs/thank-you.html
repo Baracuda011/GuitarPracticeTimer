@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Thank you — Guitar Practice Timer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Thank you for supporting Guitar Practice Timer.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2315181F'/%3E%3Cpath d='M16 6.5a9.5 9.5 0 1 1-6 2.1' fill='none' stroke='%23E8A33D' stroke-width='2.8' stroke-linecap='round'/%3E%3Cpath d='M16 16V9.2' stroke='%23ECEEF3' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E">
+
+<style>
+  /*
+    This page sits permanently in the app's cooldown palette — the warm one.
+    That is deliberate: the cooldown is the app's moment of rest and reward,
+    and this is the page people reach after doing something generous. The
+    landing page is mint; this one is amber.
+  */
+  :root {
+    --ground:    #2B1C14;
+    --raised:    #35241A;
+    --accent:    #E8A33D;
+    --text:      #F2F3F7;
+    --muted:     #A2907F;
+    --hairline:  #46321F;
+    --on-accent: #2A1A10;
+
+    --display: Georgia, "Iowan Old Style", "Times New Roman", serif;
+    --body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: ui-monospace, "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    background: var(--ground);
+    color: var(--text);
+    font-family: var(--body);
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  main {
+    width: 100%;
+    max-width: 34rem;
+    margin: 0 auto;
+    padding: 4rem 1.5rem;
+  }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 1.25rem;
+  }
+
+  h1 {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(2.2rem, 7vw, 3rem);
+    line-height: 1.08;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+    margin: 0 0 1.25rem;
+  }
+
+  p { margin: 0 0 1.15rem; text-wrap: pretty; }
+  p:last-child { margin-bottom: 0; }
+
+  .lede { font-size: 1.15rem; line-height: 1.55; }
+  .muted { color: var(--muted); }
+
+  /* The receipt note: quiet, factual, and the one thing someone might
+     actually be wondering about right after paying. */
+  .note {
+    margin: 2.25rem 0;
+    padding: 1.15rem 1.35rem;
+    background: var(--raised);
+    border-radius: 10px;
+    font-size: 0.92rem;
+    color: var(--muted);
+  }
+  .note strong { color: var(--text); font-weight: 600; }
+
+  .buttons { display: flex; flex-wrap: wrap; gap: 0.85rem; margin-top: 2.25rem; }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.85rem 1.5rem;
+    border-radius: 999px;
+    font-weight: 600;
+    text-decoration: none;
+    background: var(--accent);
+    color: var(--on-accent);
+    transition: opacity 160ms ease;
+  }
+  .btn:hover { opacity: 0.86; }
+  .btn--ghost {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--hairline);
+    transition: background-color 160ms ease;
+  }
+  .btn--ghost:hover { background: rgb(255 255 255 / 0.06); opacity: 1; }
+
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 999px; }
+
+  footer {
+    margin-top: 3.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--hairline);
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+  }
+  footer a { color: var(--muted); }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition-duration: 1ms !important; }
+  }
+</style>
+</head>
+<body>
+
+<main>
+  <p class="eyebrow">Thank you</p>
+  <h1>That genuinely helps.</h1>
+
+  <p class="lede">Guitar Practice Timer stays free, complete and free of anything
+    that tracks you &mdash; and support like yours is what makes that an easy
+    promise to keep rather than a difficult one.</p>
+
+  <p class="muted">There's no paid tier to unlock and nothing new to download.
+    You already had the whole app; you have just made it easier to keep working
+    on.</p>
+
+  <div class="note">
+    <p><strong>Your receipt comes from Stripe or PayPal directly</strong>, not
+      from me &mdash; check your inbox if you need it for your records. I never
+      see your card details, and this page doesn't know who you are: no account,
+      no tracking, nothing stored.</p>
+  </div>
+
+  <p>Now the part that actually matters: go and practise. And when the timer
+    turns amber, put the guitar down &mdash; that's the bit that does the work.</p>
+
+  <div class="buttons">
+    <a class="btn" href="index.html">Back to the app</a>
+    <a class="btn btn--ghost" href="https://github.com/Baracuda011/GuitarPracticeTimer">Source on GitHub</a>
+  </div>
+
+  <footer>
+    <p>MIT licensed &middot; No telemetry &middot; No network access &middot;
+      <a href="index.html">guitar practice timer</a></p>
+  </footer>
+</main>
+
+</body>
+</html>
