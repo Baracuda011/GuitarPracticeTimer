@@ -50,20 +50,16 @@ jobs:
         if: matrix.rid == 'win-x64'
         shell: pwsh
         run: |
-          $tag = "${{ github.event.inputs.tag }}"
-          if (-not $tag) { $tag = "${{ github.ref_name }}" }
           New-Item -ItemType Directory -Force dist | Out-Null
-          Compress-Archive -Path publish/win-x64/* -DestinationPath "dist/GuitarPracticeTimer-$tag-win-x64.zip"
+          Compress-Archive -Path publish/win-x64/* -DestinationPath "dist/GuitarPracticeTimer-win-x64.zip"
 
       - name: Package (Linux)
         if: matrix.rid == 'linux-x64'
         shell: bash
         run: |
-          tag="${{ github.event.inputs.tag }}"
-          [ -z "$tag" ] && tag="${{ github.ref_name }}"
           mkdir -p dist
           chmod +x publish/linux-x64/GuitarPracticeTimer
-          tar -czf "dist/GuitarPracticeTimer-$tag-linux-x64.tar.gz" -C publish/linux-x64 .
+          tar -czf "dist/GuitarPracticeTimer-linux-x64.tar.gz" -C publish/linux-x64 .
 
       - name: Upload package
         uses: actions/upload-artifact@v4
@@ -77,9 +73,9 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     permissions:
-      contents: write      # create the release
-      id-token: write      # sign the provenance attestation
-      attestations: write  # record it against the repository
+      contents: write
+      id-token: write
+      attestations: write
 
     steps:
       - name: Collect packages
@@ -92,8 +88,6 @@ jobs:
       # A cryptographic record that these exact files were produced by this
       # workflow, from this commit, on GitHub's runners. Anyone can check it:
       #   gh attestation verify <file> --repo Baracuda011/GuitarPracticeTimer
-      # It proves the download matches the public source, which a code-signing
-      # certificate on its own does not.
       - name: Attest build provenance
         uses: actions/attest-build-provenance@v2
         with:
@@ -109,6 +103,7 @@ jobs:
       - name: Create GitHub release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ github.event.inputs.tag || github.ref_name }}
           files: dist/*
           generate_release_notes: true
           draft: true
@@ -117,8 +112,8 @@ jobs:
 
             | Platform | Download |
             | --- | --- |
-            | Windows 10/11 (x64) | `…-win-x64.zip` — extract and run `GuitarPracticeTimer.exe` |
-            | Linux (x64) | `…-linux-x64.tar.gz` — extract and run `./GuitarPracticeTimer` |
+            | Windows 10/11 (x64) | `GuitarPracticeTimer-win-x64.zip` — extract and run `GuitarPracticeTimer.exe` |
+            | Linux (x64) | `GuitarPracticeTimer-linux-x64.tar.gz` — extract and run `./GuitarPracticeTimer` |
 
             Nothing to install and no .NET runtime to fetch first — everything is
             bundled into the one binary.
@@ -129,14 +124,14 @@ jobs:
             repository's source, and carry a signed attestation proving it:
 
             ```
-            gh attestation verify GuitarPracticeTimer-*-win-x64.zip \
+            gh attestation verify GuitarPracticeTimer-win-x64.zip \
               --repo Baracuda011/GuitarPracticeTimer
             ```
 
             **Checksums.** `SHA256SUMS.txt` lists a fingerprint for every file:
 
             ```
-            sha256sum -c SHA256SUMS.txt          # Linux
+            sha256sum -c SHA256SUMS.txt           # Linux
             Get-FileHash *.zip -Algorithm SHA256 # Windows
             ```
 
