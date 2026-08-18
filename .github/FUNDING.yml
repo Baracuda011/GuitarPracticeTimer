@@ -1,8 +1,7 @@
 # Drives the "Sponsor" button GitHub shows at the top of the repository.
 #
-# `custom` accepts up to four URLs. Replace the placeholders below with the same
-# links the site at docs/index.html points at — the Stripe page behind "Support
-# the project" and the PayPal.me link behind "Tip via PayPal". Keep the two
-# files in step; a stale funding link is worse than none.
-github: [Baracuda011]
-custom: ["STRIPE_URL_HERE", "PAYPAL_URL_HERE"]
+# These are the same two links the Support section of docs/index.html points at.
+# Keep the two files in step; a stale funding link is worse than none.
+custom:
+  - "https://pay.improveyourcx.com/b/00w7sLa8H0AG2aHgE72wU01"
+  - "https://www.paypal.com/ncp/payment/EWBN72AZM5JHG"
