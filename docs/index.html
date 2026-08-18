@@ -385,10 +385,10 @@
     <h2>Download</h2>
     <p>One file. Nothing to install, no runtime to fetch first.</p>
     <div class="buttons">
-      <a class="btn" href="https://github.com/Baracuda011/GuitarPracticeTimer/releases/latest">
-        Windows <small>x64 &middot; 32 MB</small></a>
-      <a class="btn btn--ghost" href="https://github.com/Baracuda011/GuitarPracticeTimer/releases/latest">
-        Linux <small>x64 &middot; 30 MB</small></a>
+      <a class="btn" href="https://github.com/Baracuda011/GuitarPracticeTimer/releases/latest/download/GuitarPracticeTimer-win-x64.zip">
+        Windows <small>x64 &middot; 16.6 MB</small></a>
+      <a class="btn btn--ghost" href="https://github.com/Baracuda011/GuitarPracticeTimer/releases/latest/download/GuitarPracticeTimer-linux-x64.tar.gz">
+        Linux <small>x64 &middot; 14.8 MB</small></a>
     </div>
     <p class="muted" style="margin-top:1.5rem">Android and iOS builds share the same timer core
       and are in progress.</p>
@@ -411,8 +411,11 @@
         <span>Every release is compiled by GitHub, not on my machine, and carries a signed
           attestation tying that exact file to the exact source it came from. Anyone can
           check it:
-          <pre><code>gh attestation verify GuitarPracticeTimer-*-win-x64.zip \
-  --repo Baracuda011/GuitarPracticeTimer</code></pre></span>
+          <pre><code>gh attestation verify GuitarPracticeTimer-win-x64.zip \
+  --repo Baracuda011/GuitarPracticeTimer</code></pre>
+          <pre><code>sha256sum -c SHA256SUMS.txt           # Linux
+Get-FileHash *.zip -Algorithm SHA256 # Windows</code></pre>
+        </span>
       </li>
       <li>
         <span class="k">Fingerprints</span>
