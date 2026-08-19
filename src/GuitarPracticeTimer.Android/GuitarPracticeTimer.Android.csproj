@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0-android</TargetFramework>
+    <SupportedOSPlatformVersion>23</SupportedOSPlatformVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+
+    <ApplicationId>com.guitarpracticetimer.app</ApplicationId>
+    <RootNamespace>GuitarPracticeTimer.Droid</RootNamespace>
+    <AssemblyName>GuitarPracticeTimer.Android</AssemblyName>
+
+    <!--
+      Two different numbers, both required by Google Play:
+        ApplicationDisplayVersion is what a person sees (matches the release tag)
+        ApplicationVersion is an integer that must increase on every upload
+      Keep them in step: 1.1.0 -> 10100, 1.1.1 -> 10101.
+    -->
+    <ApplicationDisplayVersion>1.1.0</ApplicationDisplayVersion>
+    <ApplicationVersion>10100</ApplicationVersion>
+
+    <AndroidPackageFormat>apk</AndroidPackageFormat>
+    <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="12.1.1" />
+    <PackageReference Include="Avalonia.Android" Version="12.1.1" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.1" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.1" />
+    <PackageReference Include="Xamarin.AndroidX.Core.SplashScreen" Version="1.0.1.16" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GuitarPracticeTimer.Ui\GuitarPracticeTimer.Ui.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/src/">
+    <Project Path="src/GuitarPracticeTimer.Android/GuitarPracticeTimer.Android.csproj" />
     <Project Path="src/GuitarPracticeTimer.Core/GuitarPracticeTimer.Core.csproj" />
     <Project Path="src/GuitarPracticeTimer.Desktop/GuitarPracticeTimer.Desktop.csproj" />
     <Project Path="src/GuitarPracticeTimer.Ui/GuitarPracticeTimer.Ui.csproj" />

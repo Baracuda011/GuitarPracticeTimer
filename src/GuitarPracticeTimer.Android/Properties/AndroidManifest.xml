@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  No permissions are declared, deliberately. The Avalonia template adds
+  android.permission.INTERNET; this app has no networking code at all, and the
+  website says so, so requesting it would make that claim false on the Play
+  Store listing. Audio playback needs no permission.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          android:installLocation="auto">
+  <application android:label="Practice Timer"
+               android:icon="@mipmap/appicon"
+               android:roundIcon="@mipmap/appicon_round"
+               android:allowBackup="true"
+               android:supportsRtl="true" />
+</manifest>

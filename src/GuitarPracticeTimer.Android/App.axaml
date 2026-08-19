@@ -1,0 +1,11 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="GuitarPracticeTimer.Droid.App"
+             RequestedThemeVariant="Dark">
+             <!-- The app paints its own palette; Dark keeps stray Fluent
+                  defaults from flashing white, same as the desktop head. -->
+
+    <Application.Styles>
+        <FluentTheme />
+    </Application.Styles>
+</Application>

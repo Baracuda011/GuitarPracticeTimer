@@ -46,14 +46,19 @@ jobs:
         with:
           dotnet-version: "10.0.x"
 
-      - name: Restore
-        run: dotnet restore
-
-      - name: Build
-        run: dotnet build --configuration Release --no-restore -warnaserror
+      # Named projects rather than the solution on purpose: the solution now
+      # contains a net10.0-android head, and building it needs the Android
+      # workload, which these runners do not have. The android job below
+      # installs it once instead of paying for it on both desktop runners.
+      - name: Build desktop
+        run: >
+          dotnet build src/GuitarPracticeTimer.Desktop/GuitarPracticeTimer.Desktop.csproj
+          --configuration Release -warnaserror
 
       - name: Test
-        run: dotnet test --configuration Release --no-build --verbosity normal
+        run: >
+          dotnet test tests/GuitarPracticeTimer.Core.Tests/GuitarPracticeTimer.Core.Tests.csproj
+          --configuration Release -warnaserror --verbosity normal
 
       # Proves the timer actually publishes for this platform, and surfaces
       # trimming warnings - which only appear at publish time, never at build.
@@ -75,6 +80,27 @@ jobs:
           path: publish/${{ matrix.rid }}/
           retention-days: 14
           if-no-files-found: error
+
+  android:
+    name: Build Android
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Install the Android workload
+        run: dotnet workload install android
+
+      - name: Build
+        run: >
+          dotnet build src/GuitarPracticeTimer.Android/GuitarPracticeTimer.Android.csproj
+          --configuration Release -warnaserror
 
   generators:
     name: Generated assets match their generators

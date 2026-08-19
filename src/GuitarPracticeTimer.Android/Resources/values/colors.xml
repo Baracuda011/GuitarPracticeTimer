@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- The app's practice-palette background, so the splash does not flash white
+       before Avalonia paints. -->
+  <color name="splash_background">#11141A</color>
+  <color name="appicon_background">#15181F</color>
+</resources>

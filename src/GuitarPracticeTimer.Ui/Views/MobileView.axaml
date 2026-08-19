@@ -1,0 +1,32 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:GuitarPracticeTimer.Ui"
+             xmlns:views="using:GuitarPracticeTimer.Ui.Views"
+             x:Class="GuitarPracticeTimer.Ui.Views.MobileView"
+             x:DataType="vm:TimerViewModel">
+
+    <!-- The phone and tablet shell. The desktop head wraps TimerView in a
+         draggable card with a custom title bar; here the same view simply fills
+         the screen, since there is no window to move and no keyboard to hint at.
+         Shared between Android and iOS. -->
+    <Border Name="Ground"
+            Background="{Binding Background}"
+            Padding="26,18,26,26">
+        <Border.Transitions>
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.55" Easing="CubicEaseInOut"/>
+            </Transitions>
+        </Border.Transitions>
+
+        <Grid RowDefinitions="Auto,*" MaxWidth="460" HorizontalAlignment="Center">
+            <TextBlock Grid.Row="0"
+                       Text="Guitar Practice Timer"
+                       FontSize="12"
+                       Foreground="#8A8F9C"
+                       HorizontalAlignment="Center"
+                       Margin="0,0,0,4"/>
+
+            <views:TimerView Grid.Row="1"/>
+        </Grid>
+    </Border>
+</UserControl>
