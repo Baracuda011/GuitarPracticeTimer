@@ -36,6 +36,10 @@ jobs:
             rid: win-x64
           - os: ubuntu-latest
             rid: linux-x64
+          # Apple silicon. Nobody on this project owns a Mac, so this runner is
+          # the only place the macOS build is ever compiled or started.
+          - os: macos-latest
+            rid: osx-arm64
 
     steps:
       - name: Check out
@@ -72,6 +76,33 @@ jobs:
       - name: Report payload size
         shell: bash
         run: du -sh publish/${{ matrix.rid }} && ls -la publish/${{ matrix.rid }}
+
+      # Actually start it. Compiling for macOS proves very little on its own -
+      # the interesting failures are at runtime, when the .NET host, Skia and
+      # miniaudio dylibs load. The app is given a few seconds and then checked
+      # for a pulse; if it had crashed on startup the process would be gone.
+      #
+      # There is no display on the runner, so the window is never drawn. This
+      # says "it starts and stays up", not "it looks right".
+      - name: Smoke test the macOS binary
+        if: matrix.os == 'macos-latest'
+        shell: bash
+        run: |
+          chmod +x "publish/${{ matrix.rid }}/GuitarPracticeTimer"
+          "./publish/${{ matrix.rid }}/GuitarPracticeTimer" > app.log 2>&1 &
+          APP_PID=$!
+          sleep 12
+
+          if kill -0 "$APP_PID" 2>/dev/null; then
+            echo "Still running after 12s - startup succeeded."
+            kill "$APP_PID" 2>/dev/null || true
+            echo "--- output ---"; cat app.log || true
+          else
+            wait "$APP_PID"; STATUS=$?
+            echo "Exited early with status $STATUS"
+            echo "--- output ---"; cat app.log || true
+            exit 1
+          fi
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
