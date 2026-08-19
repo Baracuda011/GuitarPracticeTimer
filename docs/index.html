@@ -238,7 +238,18 @@
 
   /* ---- verify ---- */
   .checks { margin: 2rem 0 0; padding: 0; list-style: none; display: grid; gap: 1.5rem; }
-  .checks li { display: grid; gap: 0.3rem; min-width: 0; }
+  /* minmax(0, 1fr) rather than the default auto track, and min-width:0 on the
+     items. An auto track sizes to its content's max-content width, and a grid
+     item's default min-width:auto refuses to shrink below it — so a single long
+     unbreakable line in a <pre> widened this row to 434px inside a 413px
+     viewport and scrolled the whole page sideways. */
+  .checks li {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.3rem;
+    min-width: 0;
+  }
+  .checks li > * { min-width: 0; }
   .checks .k {
     font-family: var(--mono);
     font-size: 0.68rem;
@@ -254,7 +265,9 @@
     padding: 0.9rem 1rem;
     background: var(--raised);
     border-radius: 8px;
-    overflow-x: auto;           /* the command is long; the page must not scroll */
+    /* The command is long. It scrolls inside its own box; the page never does. */
+    max-width: 100%;
+    overflow-x: auto;
     font-family: var(--mono);
     font-size: 0.78rem;
     line-height: 1.5;
@@ -288,6 +301,12 @@
     .cycle li { grid-template-columns: 1fr; gap: 0.2rem; }
     .cycle .clock { text-align: left; }
     section { padding: 4rem 0; }
+
+    /* On a phone a sideways-scrolling box hides the end of the command with no
+       visible cue, which is a poor look in the section about verifying things.
+       Wrap at spaces instead — the gh command already uses a \ continuation,
+       and no single token is long enough to need breaking mid-word. */
+    pre { white-space: pre-wrap; }
   }
 
   @media (prefers-reduced-motion: reduce) {
