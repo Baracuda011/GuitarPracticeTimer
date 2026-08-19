@@ -1,0 +1,45 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="GuitarPracticeTimer.Ui.Views.SplashView">
+
+    <!--
+        Drawn by the app rather than by Android's SplashScreen API. That API
+        gives you a circular icon and a branding image the system pins to the
+        bottom at its own size - no way to put 3:00 inside the dial or to set
+        the wordmark anywhere else. The system splash is now just the flat
+        background colour, so this fades in from it seamlessly.
+    -->
+    <Border Background="#11141A">
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+
+            <!-- The dial exactly as the app draws it: 228 box, 200 track,
+                 11 stroke, sweep from 12 o'clock stopping short of a full turn. -->
+            <Panel Width="228" Height="228" HorizontalAlignment="Center">
+                <Ellipse Width="200" Height="200" Stroke="#FFFFFF" Opacity="0.07"
+                         StrokeThickness="11"/>
+                <Path Data="M 114,14 A 100,100 0 1 1 105.28,14.38"
+                      Stroke="#7FD1AE" StrokeThickness="11"
+                      StrokeLineCap="Round"/>
+                <TextBlock Text="3:00"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                           FontSize="64" FontWeight="Light"
+                           Foreground="#F2F3F7"
+                           FontFeatures="+tnum"
+                           Margin="0,0,0,4"/>
+            </Panel>
+
+            <TextBlock Text="Guitar Practice Timer"
+                       HorizontalAlignment="Center"
+                       Margin="0,44,0,0"
+                       FontSize="29" FontWeight="Light"
+                       LetterSpacing="0.6"
+                       Foreground="#F2F3F7"/>
+
+            <TextBlock Text="practise in blocks, rest between them"
+                       HorizontalAlignment="Center"
+                       Margin="0,12,0,0"
+                       FontSize="13.5"
+                       Foreground="#8A8F9C"/>
+        </StackPanel>
+    </Border>
+</UserControl>

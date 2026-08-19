@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+    Android 12 (API 31) and later always draw a splash of their own before the
+    app gets a frame, and it cannot be skipped. What it can be is *quiet*: just
+    the app's background colour, with no icon and no branding image.
+
+    That is deliberate. The system splash only offers a circular icon and a
+    branding image pinned to the bottom at a size it chooses - no way to put the
+    clock inside the dial or to place the wordmark. The real splash is SplashView
+    in the shared UI project, which fades in from this flat colour so the join is
+    invisible.
+
+    windowSplashScreenAnimatedIcon points at a fully transparent drawable
+    because omitting it makes the system fall back to the launcher icon, which
+    is the oversized-favicon look this replaces.
+-->
+<resources>
+
+  <style name="AppTheme.NoActionBar" parent="@style/Theme.AppCompat.DayNight.NoActionBar">
+    <item name="android:windowActionBar">false</item>
+    <item name="android:windowNoTitle">true</item>
+
+    <item name="android:windowSplashScreenBackground">@color/splash_background</item>
+    <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_blank</item>
+  </style>
+
+</resources>

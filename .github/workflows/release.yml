@@ -68,9 +68,75 @@ jobs:
           path: dist/
           if-no-files-found: error
 
+  android:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref_name }}
+
+      - name: Set up .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Install the Android workload
+        run: dotnet workload install android
+
+      # arm64 only. A default build also bundles a 32-bit slice and doubles the
+      # download to 40 MB, and unlike the Play bundle a plain .apk has no store
+      # to split it per device.
+      #
+      # Signing: if the repository has an upload keystore in its secrets it is
+      # used, otherwise the build falls back to the debug key. A debug-signed
+      # .apk installs perfectly well by sideloading - it is only Google Play
+      # that refuses one - so the direct download works either way.
+      # MSBuild reads environment variables as properties, so exporting these is
+      # the same as passing -p:, without the secrets ever appearing in a command
+      # line. When no keystore secret is configured nothing is exported, the
+      # csproj leaves AndroidKeyStore off, and the build falls back to the debug
+      # key.
+      - name: Configure signing
+        if: ${{ env.ANDROID_KEYSTORE_BASE64 != '' }}
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/upload.jks"
+          {
+            echo "AndroidSigningKeyStore=$RUNNER_TEMP/upload.jks"
+            echo "AndroidSigningKeyAlias=${{ secrets.ANDROID_KEY_ALIAS }}"
+            echo "AndroidSigningStorePass=${{ secrets.ANDROID_STORE_PASSWORD }}"
+            echo "AndroidSigningKeyPass=${{ secrets.ANDROID_KEY_PASSWORD }}"
+          } >> "$GITHUB_ENV"
+
+      - name: Publish APK
+        run: >
+          dotnet publish src/GuitarPracticeTimer.Android/GuitarPracticeTimer.Android.csproj
+          --configuration Release
+          -p:Abi=arm64
+          -p:AndroidPackageFormat=apk
+          --output publish/android
+
+      - name: Package
+        shell: bash
+        run: |
+          mkdir -p dist
+          cp publish/android/*-Signed.apk "dist/GuitarPracticeTimer-android-arm64.apk"
+          ls -la dist
+
+      - name: Upload package
+        uses: actions/upload-artifact@v4
+        with:
+          name: package-android
+          path: dist/
+          if-no-files-found: error
+
   release:
     name: Attest, checksum and publish
-    needs: build
+    needs: [build, android]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -114,6 +180,12 @@ jobs:
             | --- | --- |
             | Windows 10/11 (x64) | `GuitarPracticeTimer-win-x64.zip` - extract and run `GuitarPracticeTimer.exe` |
             | Linux (x64) | `GuitarPracticeTimer-linux-x64.tar.gz` - extract and run `./GuitarPracticeTimer` |
+            | Android (arm64) | `GuitarPracticeTimer-android-arm64.apk` - open it on the phone to install |
+
+            The Android build is here for direct install while the Play Store
+            listing is in review. Android will warn that it came from outside the
+            Play Store; that is expected for any sideloaded app and is not a
+            report of anything found. macOS and iOS builds are planned.
 
             Nothing to install and no .NET runtime to fetch first - everything is
             bundled into the one binary.

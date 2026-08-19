@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A deliberately empty icon. Android falls back to the launcher icon if
+     windowSplashScreenAnimatedIcon is unset, so this suppresses it and leaves
+     the system splash as a flat colour for SplashView to fade in from. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+        android:width="1dp"
+        android:height="1dp"
+        android:viewportWidth="1"
+        android:viewportHeight="1">
+    <path android:pathData="M0,0" android:fillColor="#00000000"/>
+</vector>
