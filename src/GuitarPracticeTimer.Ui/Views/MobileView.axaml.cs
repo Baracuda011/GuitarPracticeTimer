@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Threading;
 
 namespace GuitarPracticeTimer.Ui.Views;
 
@@ -20,6 +21,9 @@ public partial class MobileView : UserControl
     /// <summary>Wide enough for the dial and the controls to sit side by side.</summary>
     private const double LandscapeWidth = 900;
 
+    /// <summary>Null until the first size arrives; the XAML defaults are portrait.</summary>
+    private bool? _landscape;
+
     public MobileView()
     {
         InitializeComponent();
@@ -34,10 +38,23 @@ public partial class MobileView : UserControl
     /// </summary>
     private void Adapt(Size size)
     {
-        var landscape = size.Width > size.Height;
+        if (size.Width <= 0 || size.Height <= 0) return;
 
-        Timer.SideBySide = landscape;
-        Timer.MaxWidth = landscape ? LandscapeWidth : PortraitWidth;
-        Timer.MinHeight = landscape ? 0 : PortraitHeight;
+        var landscape = size.Width > size.Height;
+        if (_landscape == landscape) return;
+        _landscape = landscape;
+
+        // Posted rather than applied inline. These properties invalidate measure,
+        // and SizeChanged fires from inside the layout pass: changing them there
+        // left the first pass after a cold start with nothing drawn at all, and
+        // it stayed blank until something external - a rotation - forced another
+        // pass. Deferring to the next dispatcher cycle applies them to a settled
+        // tree instead.
+        Dispatcher.UIThread.Post(() =>
+        {
+            Timer.SideBySide = landscape;
+            Timer.MaxWidth = landscape ? LandscapeWidth : PortraitWidth;
+            Timer.MinHeight = landscape ? 0 : PortraitHeight;
+        }, DispatcherPriority.Loaded);
     }
 }

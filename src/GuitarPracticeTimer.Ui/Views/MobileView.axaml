@@ -40,7 +40,11 @@
             <ScrollViewer Grid.Row="1"
                           VerticalScrollBarVisibility="Auto"
                           HorizontalScrollBarVisibility="Disabled">
-                <views:TimerView Name="Timer" VerticalAlignment="Center"/>
+                <!-- Portrait values are declared here, not applied from code, so
+                     the very first layout pass is already correct. Code-behind
+                     only intervenes when the device is turned. -->
+                <views:TimerView Name="Timer" VerticalAlignment="Center"
+                                 MaxWidth="460" MinHeight="560"/>
             </ScrollViewer>
         </Grid>
     </Border>
