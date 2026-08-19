@@ -13,9 +13,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>Guitar Practice Timer — Free App with Enforced Breaks</title>
-<meta name="description" content="A free practice timer for guitarists: short focused blocks, then a three-minute break you can't skip — because that's where the learning happens.">
-<link rel="canonical" href="https://baracuda011.github.io/GuitarPracticeTimer/">
+<title>Guitar Practice Timer - Free App with Enforced Breaks</title>
+<meta name="description" content="A free practice timer for guitarists: short focused blocks, then a three-minute break you can't skip - because that's where the learning happens.">
+<link rel="canonical" href="https://guitarpracticetimer.com/">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <meta name="author" content="Nemanja Stankovic">
 <meta name="theme-color" content="#11141A">
@@ -25,10 +25,10 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Guitar Practice Timer">
 <meta property="og:locale" content="en_GB">
-<meta property="og:url" content="https://baracuda011.github.io/GuitarPracticeTimer/">
-<meta property="og:title" content="Guitar Practice Timer — Free App with Enforced Breaks">
-<meta property="og:description" content="A free practice timer for guitarists: short focused blocks, then a three-minute break you can't skip — because that's where the learning happens.">
-<meta property="og:image" content="https://baracuda011.github.io/GuitarPracticeTimer/og-image.png">
+<meta property="og:url" content="https://guitarpracticetimer.com/">
+<meta property="og:title" content="Guitar Practice Timer - Free App with Enforced Breaks">
+<meta property="og:description" content="A free practice timer for guitarists: short focused blocks, then a three-minute break you can't skip - because that's where the learning happens.">
+<meta property="og:image" content="https://guitarpracticetimer.com/og-image.png">
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -36,20 +36,26 @@
 
 <!-- X / Twitter -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Guitar Practice Timer — Free App with Enforced Breaks">
-<meta name="twitter:description" content="A free practice timer for guitarists: short focused blocks, then a three-minute break you can't skip — because that's where the learning happens.">
-<meta name="twitter:image" content="https://baracuda011.github.io/GuitarPracticeTimer/og-image.png">
+<meta name="twitter:title" content="Guitar Practice Timer - Free App with Enforced Breaks">
+<meta name="twitter:description" content="A free practice timer for guitarists: short focused blocks, then a three-minute break you can't skip - because that's where the learning happens.">
+<meta name="twitter:image" content="https://guitarpracticetimer.com/og-image.png">
 <meta name="twitter:image:alt" content="Guitar Practice Timer showing a mint dial counting down from three minutes.">
 
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2315181F'/%3E%3Cpath d='M16 6.5a9.5 9.5 0 1 1-6 2.1' fill='none' stroke='%237FD1AE' stroke-width='2.8' stroke-linecap='round'/%3E%3Cpath d='M16 16V9.2' stroke='%23ECEEF3' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<!-- Icons. favicon.ico carries 16-256px for older browsers and Windows pinned
+     sites; favicon.svg is used by modern browsers at any resolution; the PNGs
+     cover Android, iOS home screens and the maskable Android shape. -->
+<link rel="icon" href="favicon.ico" sizes="32x32">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="manifest" href="site.webmanifest">
 
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   "name": "Guitar Practice Timer",
-  "url": "https://baracuda011.github.io/GuitarPracticeTimer/",
+  "url": "https://guitarpracticetimer.com/",
   "description": "A practice timer for guitarists that splits a session into short focused blocks and enforces a three-minute break between them.",
   "applicationCategory": "MultimediaApplication",
   "operatingSystem": "Windows 10, Windows 11, Linux",
@@ -62,10 +68,10 @@
     "priceCurrency": "USD"
   },
   "downloadUrl": "https://github.com/Baracuda011/GuitarPracticeTimer/releases/latest",
-  "image": "https://baracuda011.github.io/GuitarPracticeTimer/og-image.png",
+  "image": "https://guitarpracticetimer.com/og-image.png",
   "screenshot": [
-    "https://baracuda011.github.io/GuitarPracticeTimer/screenshot-practice.png",
-    "https://baracuda011.github.io/GuitarPracticeTimer/screenshot-cooldown.png"
+    "https://guitarpracticetimer.com/screenshot-practice.png",
+    "https://guitarpracticetimer.com/screenshot-cooldown.png"
   ],
   "author": {
     "@type": "Person",
@@ -297,7 +303,7 @@
   .checks { margin: 2rem 0 0; padding: 0; list-style: none; display: grid; gap: 1.5rem; }
   /* minmax(0, 1fr) rather than the default auto track, and min-width:0 on the
      items. An auto track sizes to its content's max-content width, and a grid
-     item's default min-width:auto refuses to shrink below it — so a single long
+     item's default min-width:auto refuses to shrink below it - so a single long
      unbreakable line in a <pre> widened this row to 434px inside a 413px
      viewport and scrolled the whole page sideways. */
   .checks li {
@@ -361,7 +367,7 @@
 
     /* On a phone a sideways-scrolling box hides the end of the command with no
        visible cue, which is a poor look in the section about verifying things.
-       Wrap at spaces instead — the gh command already uses a \ continuation,
+       Wrap at spaces instead - the gh command already uses a \ continuation,
        and no single token is long enough to need breaking mid-word. */
     pre { white-space: pre-wrap; }
   }
@@ -379,7 +385,7 @@
     <p class="eyebrow">Practice</p>
     <h1>The rest will help you play better and faster.</h1>
     <p class="lede">A practice timer for guitarists that splits a session into short focused
-      blocks &mdash; and then enforces the break between them, because that break is where a
+      blocks - and then enforces the break between them, because that break is where a
       surprising amount of the learning actually happens.</p>
     <p class="muted">Free, open source, and completely offline. It has no account, no
       analytics, and no network code of any kind.</p>
@@ -401,10 +407,10 @@
     <h2>One block, one break, repeat.</h2>
     <p>You set the practice length and start. When the block ends the app plays a two-note
       chime, the entire window cross-fades from cool mint to warm amber, and the break begins
-      on its own &mdash; you don't have to remember to take it.</p>
+      on its own - you don't have to remember to take it.</p>
 
     <ul class="cycle">
-      <li><span class="clock">0:30&ndash;10:00</span>
+      <li><span class="clock">0:30-10:00</span>
         <span>Practice. You choose the length; it defaults to <span class="clock">3:00</span>.</span></li>
       <li><span class="clock">3:00</span>
         <span>Cool down. Fixed, automatic, and the same every time.</span></li>
@@ -420,7 +426,7 @@
       finger-tapping sequence in alternating <span class="clock">10s</span> bouts of practice
       and <span class="clock">10s</span> of rest, under magnetoencephalography. Early learning
       was accounted for almost entirely by gains that appeared <em>across the rests</em>, not
-      within the practice bouts &mdash; and brain activity during each rest predicted how much
+      within the practice bouts - and brain activity during each rest predicted how much
       that particular break would give.</p>
     <p>A later study on a digital piano found the effect is specific: players who practised a
       different sequence during their break gained significantly less across it. Resting means
@@ -428,13 +434,13 @@
 
     <ul class="refs">
       <li><span class="who">B&ouml;nstrup et al. (2019).</span> A Rapid Form of Offline
-        Consolidation in Skill Learning. <em>Current Biology</em> 29(8), 1346&ndash;1351.
+        Consolidation in Skill Learning. <em>Current Biology</em> 29(8), 1346-1351.
         <a href="https://doi.org/10.1016/j.cub.2019.02.049">doi:10.1016/j.cub.2019.02.049</a></li>
       <li><span class="who">B&ouml;nstrup et al. (2020).</span> Modelling micro-offline gains.
         <em>npj Science of Learning</em> 5, 7.
         <a href="https://doi.org/10.1038/s41539-020-0066-9">doi:10.1038/s41539-020-0066-9</a></li>
       <li><span class="who">Simmons, Allen, Cash &amp; Duke (2019).</span> Effects of interleaved
-        activity during rest. <em>Psychology of Music</em> 47(1), 83&ndash;95.
+        activity during rest. <em>Psychology of Music</em> 47(1), 83-95.
         <a href="https://doi.org/10.1177/0305735617735373">doi:10.1177/0305735617735373</a></li>
       <li><span class="who">Das et al. (2025).</span> The counterpoint, included on purpose:
         argues these gains reflect fatigue recovery and pre-planning rather than true offline
@@ -446,7 +452,7 @@
       <p><strong>Two honest caveats.</strong></p>
       <p>The strongest evidence sits at a timescale of <em>seconds</em>. This app enforces
         <span class="clock">three minutes</span>, which is an extrapolation, not a finding.</p>
-      <p>And the 2025 PNAS paper above disputes the mechanism &mdash; though not that
+      <p>And the 2025 PNAS paper above disputes the mechanism - though not that
         performance improves coming out of a break. Either way, the break separately does the
         uncontroversial job of keeping your hands out of a repetitive strain injury.</p>
     </div>
@@ -456,7 +462,7 @@
     <p class="eyebrow">Cool down</p>
     <h2>A break you can't talk yourself out of.</h2>
     <p>Every practice tool lets you skip the rest. That is the one thing this one won't do,
-      and it is deliberate &mdash; the break is not idle time between the useful parts, it
+      and it is deliberate - the break is not idle time between the useful parts, it
       <em>is</em> one of the useful parts.</p>
     <p>So during the cooldown the skip button stays locked for the first
       <span class="clock">60</span> seconds, reset does nothing at all, and the length slider
@@ -482,13 +488,13 @@
   <section>
     <p class="eyebrow">Verify</p>
     <h2>Is this safe?</h2>
-    <p>Short answer: yes &mdash; and you don't have to take my word for it. Every claim
+    <p>Short answer: yes - and you don't have to take my word for it. Every claim
       below is something you can check for yourself in a couple of minutes.</p>
 
     <ul class="checks">
       <li>
         <span class="k">The source is public</span>
-        <span>All of it, and there isn't much &mdash; the whole timer is a few hundred lines.
+        <span>All of it, and there isn't much - the whole timer is a few hundred lines.
           You can read it in an afternoon.</span>
       </li>
       <li>
@@ -509,14 +515,14 @@ Get-FileHash *.zip -Algorithm SHA256 # Windows</code></pre>
       </li>
       <li>
         <span class="k">It cannot phone home</span>
-        <span>The app contains no networking code of any kind &mdash; no account, no analytics,
+        <span>The app contains no networking code of any kind - no account, no analytics,
           no update check. That is not a promise about what it does with your data; there is
           simply no code that could send any.</span>
       </li>
       <li>
         <span class="k">On first run</span>
         <span>Windows may ask you to confirm before opening a program it hasn't seen many
-          people run yet &mdash; choose <em>More info</em>, then <em>Run anyway</em>. That
+          people run yet - choose <em>More info</em>, then <em>Run anyway</em>. That
           prompt reflects how widely a program has been downloaded so far, not anything
           found inside it.</span>
       </li>
@@ -529,7 +535,7 @@ Get-FileHash *.zip -Algorithm SHA256 # Windows</code></pre>
     <p>The app is free and stays free. There is no paid tier planned, nothing is held back, and
       it will never ask you for anything inside the app itself.</p>
     <p class="ask">If this little tool helps you practise better, you can support its development
-      with any amount you like. No obligation &mdash; just keep practising.</p>
+      with any amount you like. No obligation - just keep practising.</p>
     <div class="buttons">
       <a class="btn btn--loud" href="https://pay.improveyourcx.com/b/00w7sLa8H0AG2aHgE72wU01"
          target="_blank" rel="noopener" data-ga-event="support_stripe_click">Support the project (Stripe)</a>
@@ -549,7 +555,7 @@ Get-FileHash *.zip -Algorithm SHA256 # Windows</code></pre>
 
 <script>
   // The page ground shifts to the cooldown palette while the cooldown section
-  // holds the viewport, then shifts back — the same move the app makes, over
+  // holds the viewport, then shifts back - the same move the app makes, over
   // the same 550ms. Nothing here is load-bearing: without JS the page simply
   // stays in the practice palette throughout.
   const rest = document.getElementById("rest");

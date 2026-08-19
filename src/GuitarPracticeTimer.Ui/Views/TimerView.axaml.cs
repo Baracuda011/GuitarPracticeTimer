@@ -4,7 +4,7 @@ using Avalonia.Interactivity;
 namespace GuitarPracticeTimer.Ui.Views;
 
 /// <summary>
-/// The dial, the buttons and the length slider — everything that is the same on
+/// The dial, the buttons and the length slider - everything that is the same on
 /// a desktop window and a phone screen. Platform heads supply their own chrome
 /// around this and set the <see cref="TimerViewModel"/> as DataContext.
 /// </summary>

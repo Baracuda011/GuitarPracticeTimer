@@ -14,7 +14,7 @@
   </PropertyGroup>
 
   <!--
-    Size settings, applied only when a runtime identifier is supplied — i.e. on
+    Size settings, applied only when a runtime identifier is supplied - i.e. on
     `dotnet publish -r <rid>`. Guarding on the RID keeps a plain
     `dotnet build -c Release` (what CI gates on) working, since SelfContained
     without a RID is an error.

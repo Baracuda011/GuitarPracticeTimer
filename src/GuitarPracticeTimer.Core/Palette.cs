@@ -9,7 +9,7 @@ public readonly record struct Rgb(byte R, byte G, byte B)
 
 /// <summary>
 /// The two palettes the window cross-fades between. The shift from cool to warm
-/// is the app's primary signal that practice has ended — on a machine with no
+/// is the app's primary signal that practice has ended - on a machine with no
 /// working speaker it is the only signal.
 /// </summary>
 public static class Palette

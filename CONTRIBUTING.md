@@ -13,7 +13,7 @@ Before opening a PR, it helps to know what the project is optimising for:
   network access. Features that need a preferences dialog are a hard sell.
 - **The break is not optional.** The 60-second skip lock is the point of the
   app, not an inconvenience to be smoothed away. PRs that add a "disable
-  cooldown" switch will be declined — fork it if you want that.
+  cooldown" switch will be declined - fork it if you want that.
 - **Very few dependencies.** Avalonia for the UI and SoundFlow for audio, and
   that is the whole list. `GuitarPracticeTimer.Core` has none at all and should
   stay that way. The asset generators use only the Python standard library.
@@ -46,7 +46,7 @@ Python 3 is only needed if you change the icon or the chime.
    dotnet test
    ```
    CI runs both on Windows and Linux, so a change that only compiles on one of
-   them will be caught. `Nullable` is enabled — keep it warning-free rather than
+   them will be caught. `Nullable` is enabled - keep it warning-free rather than
    silencing it with `!`.
 3. **Cover changes to the rules with a test.** If you touch `PracticeSession`,
    `PracticeSessionTests` is where it gets proven. The cooldown enforcement
@@ -58,7 +58,7 @@ Python 3 is only needed if you change the icon or the chime.
 5. **Regenerate assets if you changed a generator.** `python verify_assets.py`
    must pass; CI runs it on every push.
 6. **Match the surrounding style.** [`.editorconfig`](.editorconfig) covers the
-   mechanics; beyond that, mirror what is already there — file-scoped
+   mechanics; beyond that, mirror what is already there - file-scoped
    namespaces, `_camelCase` private fields, expression-bodied one-liners, and
    the section banner comments in
    [`PracticeSession.cs`](src/GuitarPracticeTimer.Core/PracticeSession.cs).
@@ -67,7 +67,7 @@ Python 3 is only needed if you change the icon or the chime.
 
 ## Things that would genuinely help
 
-- **Linux testing** on anything that isn't Ubuntu — window chrome, the audio
+- **Linux testing** on anything that isn't Ubuntu - window chrome, the audio
   backend and font rendering are the likely trouble spots.
 - **The Android and iOS heads**, built on the existing `Core` and `Ui`
   projects. A short GIF of the colour cross-fade for the README would help too.
@@ -80,11 +80,11 @@ Python 3 is only needed if you change the icon or the chime.
 
 Use the [bug report template](https://github.com/Baracuda011/GuitarPracticeTimer/issues/new?template=bug_report.yml).
 Include your OS and version, how you're running it (`dotnet run` or a published
-binary), and what the window looked like when it went wrong — a screenshot of
+binary), and what the window looked like when it went wrong - a screenshot of
 the timer mid-failure is worth a lot here.
 
 ## A note on the science
 
 The README makes claims about interval practice and cites sources. If you think
 a claim is overstated, understated, or has been superseded, that's a legitimate
-issue to open — please bring the citation with you.
+issue to open - please bring the citation with you.

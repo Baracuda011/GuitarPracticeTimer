@@ -14,8 +14,8 @@ public enum SessionEvent { None, EnteredCooldown, EnteredPractice }
 /// <remarks>
 /// The caller supplies the current UTC time on every method that needs one.
 /// That keeps the class free of a hidden clock, makes the enforcement rules
-/// testable without waiting three real minutes, and — the reason it matters on
-/// mobile — means a session resumed after the OS suspended the app recomputes
+/// testable without waiting three real minutes, and - the reason it matters on
+/// mobile - means a session resumed after the OS suspended the app recomputes
 /// from its deadline instead of from ticks it never received.
 /// </remarks>
 public sealed class PracticeSession
@@ -43,7 +43,7 @@ public sealed class PracticeSession
     /// <summary>The practice length currently selected, i.e. where the slider sits.</summary>
     public double DurationSeconds { get; private set; } = DefaultDurationSeconds;
 
-    /// <summary>Length of the segment currently on the dial — practice length or cooldown.</summary>
+    /// <summary>Length of the segment currently on the dial - practice length or cooldown.</summary>
     public double TotalSeconds { get; private set; } = DefaultDurationSeconds;
 
     public double RemainingSeconds { get; private set; } = DefaultDurationSeconds;
@@ -57,7 +57,7 @@ public sealed class PracticeSession
     /// <summary>How much of the dial is still filled, 0 to 1.</summary>
     public double RemainingFraction => TotalSeconds > 0 ? RemainingSeconds / TotalSeconds : 0;
 
-    /// <summary>The segment is untouched — neither started nor part-way through.</summary>
+    /// <summary>The segment is untouched - neither started nor part-way through.</summary>
     private bool AtFullSegment => Math.Abs(RemainingSeconds - TotalSeconds) < Epsilon;
 
     // ---------------------------------------------------------------- ticking
@@ -106,7 +106,7 @@ public sealed class PracticeSession
         return SessionEvent.None;
     }
 
-    /// <summary>Reset is a no-op for the whole break — there is no escape hatch.</summary>
+    /// <summary>Reset is a no-op for the whole break - there is no escape hatch.</summary>
     /// <returns>Whether the reset was allowed.</returns>
     public bool Reset()
     {

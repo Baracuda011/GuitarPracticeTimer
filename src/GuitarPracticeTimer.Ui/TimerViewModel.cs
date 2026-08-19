@@ -9,7 +9,7 @@ namespace GuitarPracticeTimer.Ui;
 
 /// <summary>
 /// Drives the UI from a <see cref="PracticeSession"/>. Shared by every platform
-/// head — the desktop window and the mobile page bind to the same instance type
+/// head - the desktop window and the mobile page bind to the same instance type
 /// and differ only in how they lay the same values out.
 /// </summary>
 /// <remarks>

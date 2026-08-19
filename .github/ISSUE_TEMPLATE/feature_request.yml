@@ -7,7 +7,7 @@ body:
     attributes:
       value: |
         Before you write this up, it's worth knowing what the project is
-        optimising for — see
+        optimising for - see
         [CONTRIBUTING.md](../blob/main/CONTRIBUTING.md#what-this-project-is-trying-to-be).
 
         The short version: one window, no settings dialog, no third-party
@@ -19,7 +19,7 @@ body:
       label: What problem does this solve?
       description: >
         Describe the practice situation where the app currently gets in your way.
-        Start with the problem, not the solution — it often turns out there's a
+        Start with the problem, not the solution - it often turns out there's a
         simpler fix than the one you had in mind.
       placeholder: >
         I practise three different licks in rotation and I lose track of which
@@ -43,8 +43,8 @@ body:
         The app deliberately has no preferences UI. Features that need one are a
         hard sell, though not automatically refused.
       options:
-        - "No — it works with the existing controls or a sensible fixed default"
-        - "Yes — it would need somewhere to configure it"
+        - "No - it works with the existing controls or a sensible fixed default"
+        - "Yes - it would need somewhere to configure it"
         - "Not sure"
     validations:
       required: true
@@ -73,7 +73,7 @@ body:
       label: Supporting evidence
       description: >
         If your suggestion is based on how practice or motor learning works,
-        a citation helps — the README's claims are sourced and new ones should be
+        a citation helps - the README's claims are sourced and new ones should be
         too.
     validations:
       required: false

@@ -55,7 +55,7 @@ public sealed class Chime : IChime, IDisposable
     private bool _unavailable;
     private bool _disposed;
 
-    /// <summary>Fire and forget — opening the device can block, so it never runs on the UI thread.</summary>
+    /// <summary>Fire and forget - opening the device can block, so it never runs on the UI thread.</summary>
     public void Play()
     {
         if (_unavailable || _disposed) return;

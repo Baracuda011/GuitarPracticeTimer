@@ -13,7 +13,7 @@ already agreeing the change is in scope. Link it above.
 
 ## How it was tested
 
-Building is not enough on its own — this is a timer, so it has to be watched
+Building is not enough on its own - this is a timer, so it has to be watched
 running at least once.
 
 - [ ] `dotnet build -c Release` succeeds with no new warnings
@@ -36,7 +36,7 @@ running at least once.
 - [ ] README updated if behaviour, shortcuts or the customisation table changed
 
 <!--
-If you're ticking "no" on any of these deliberately, say why here — the rules
+If you're ticking "no" on any of these deliberately, say why here - the rules
 have exceptions, they just need arguing for.
 -->
 

@@ -56,7 +56,7 @@ jobs:
         run: dotnet test --configuration Release --no-build --verbosity normal
 
       # Proves the timer actually publishes for this platform, and surfaces
-      # trimming warnings — which only appear at publish time, never at build.
+      # trimming warnings - which only appear at publish time, never at build.
       - name: Publish
         run: >
           dotnet publish src/GuitarPracticeTimer.Desktop/GuitarPracticeTimer.Desktop.csproj
@@ -91,7 +91,7 @@ jobs:
 
       # Compares the icon by decoded pixels rather than by bytes. PNG data is
       # zlib-compressed and zlib's output differs between versions, so the same
-      # icon is 8142 bytes on one Python and 8005 on another — a byte
+      # icon is 8142 bytes on one Python and 8005 on another - a byte
       # comparison fails for a reason unrelated to whether the icon is correct.
       - name: Verify Assets/ against make_icon.py and make_chime.py
         run: python verify_assets.py

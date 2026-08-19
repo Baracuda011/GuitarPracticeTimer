@@ -1,0 +1,26 @@
+[33mtag v1.0.0[m
+Tagger: Nemanja Stankovic <nemanja.stankovic@gmail.com>
+Date:   Tue Aug 18 14:40:12 2026 +0400
+
+Guitar Practice Timer v1.0.0
+
+[33mcommit da72b25c0200f27828dacae0eff53e2b1a955321[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;33mtag: [m[1;33mv1.0.0[m[33m, [m[1;31morigin/main[m[33m)[m
+Author: Nemanja Stankovic <nemanja.stankovic@gmail.com>
+Date:   Sat Aug 15 21:24:15 2026 +0400
+
+    Update contributor docs for the cross-platform build
+    
+    CONTRIBUTING still told people the app was plain WPF on .NET 8, that it
+    does not run on Linux or macOS, and pointed at MainWindow.xaml.cs, which
+    no longer exists. It also listed replacing Console.Beep as wanted work,
+    which is already done.
+    
+    The pre-PR checklist now covers the test suite and the asset verifier,
+    and adds the rule that matters most: changes to the practice/cooldown
+    rules belong in Core and need a test, and the enforcement tests are not
+    to be weakened to make a change pass.
+    
+    CHANGELOG gains an Unreleased entry describing the port. The 1.0.0
+    section is left alone — it is an accurate record of what shipped.
+    
+    Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>

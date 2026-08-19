@@ -63,7 +63,7 @@ reported to the maintainer, [**@Baracuda011**](https://github.com/Baracuda011),
 by private message on GitHub. If the matter is sensitive and you would rather
 not use a public platform at all, open a
 [private security advisory](https://github.com/Baracuda011/GuitarPracticeTimer/security/advisories/new)
-— it is a private channel to the maintainer and will be read, even though the
+- it is a private channel to the maintainer and will be read, even though the
 form is nominally for security reports.
 
 All complaints will be reviewed and investigated promptly and fairly.

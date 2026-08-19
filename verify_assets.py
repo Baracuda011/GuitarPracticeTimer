@@ -4,7 +4,7 @@ Why this is not just `git diff`:
 
 Assets/app.ico embeds PNG frames, and PNG pixel data is zlib-compressed. zlib
 does not promise identical output across versions, so the same pixels compress
-to a different number of bytes on different Pythons — 8142 locally, 8005 on a
+to a different number of bytes on different Pythons - 8142 locally, 8005 on a
 3.14 runner. A byte comparison therefore fails for a reason that has nothing to
 do with whether the icon is correct.
 
@@ -102,7 +102,7 @@ def safely(check):
     """A malformed asset raises rather than returning; report it, don't traceback."""
     try:
         return check()
-    except Exception as exc:  # noqa: BLE001 — any failure here means "does not match"
+    except Exception as exc:  # noqa: BLE001 - any failure here means "does not match"
         return f"{check.__name__} could not read the asset: {exc}"
 
 

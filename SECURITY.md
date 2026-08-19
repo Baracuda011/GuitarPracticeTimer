@@ -16,7 +16,7 @@ attack surface, which is worth stating plainly:
 
 - **No network access.** It makes no HTTP requests, opens no sockets, and
   contacts no telemetry or update service.
-- **No file I/O at runtime.** It reads and writes nothing on disk — no settings
+- **No file I/O at runtime.** It reads and writes nothing on disk - no settings
   file, no log, no practice history.
 - **No credentials, accounts, or personal data**, so there is nothing stored to
   leak.
@@ -35,7 +35,7 @@ workflow.
 
 Report it privately through GitHub's
 [private vulnerability reporting](https://github.com/Baracuda011/GuitarPracticeTimer/security/advisories/new)
-— the **Security** tab → **Report a vulnerability**. That is the only supported
+- the **Security** tab → **Report a vulnerability**. That is the only supported
 private channel; there is no security contact email for this project.
 
 Please include:
@@ -64,7 +64,7 @@ Release binaries are built by the GitHub Actions workflow in
 this repository. If you obtained `GuitarPracticeTimer.exe` from anywhere other
 than this repository's Releases page, treat it as untrusted.
 
-The published executable is unsigned — Windows SmartScreen will warn on first
+The published executable is unsigned - Windows SmartScreen will warn on first
 run. That warning is expected and is not itself evidence of tampering, but it
 also means the binary carries no cryptographic proof of origin. If that matters
 to you, build it yourself from source: `dotnet publish -c Release -o publish`.

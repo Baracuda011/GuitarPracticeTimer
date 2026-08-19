@@ -14,7 +14,7 @@ public static class DialGeometry
     public const double Radius = 100;
 
     /// <summary>
-    /// A full circle is clamped just short of 360° — a sweep of exactly 360°
+    /// A full circle is clamped just short of 360° - a sweep of exactly 360°
     /// puts the arc's end point on top of its start point, which collapses the
     /// path to nothing and makes a completed dial vanish.
     /// </summary>

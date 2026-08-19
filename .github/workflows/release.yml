@@ -112,10 +112,10 @@ jobs:
 
             | Platform | Download |
             | --- | --- |
-            | Windows 10/11 (x64) | `GuitarPracticeTimer-win-x64.zip` — extract and run `GuitarPracticeTimer.exe` |
-            | Linux (x64) | `GuitarPracticeTimer-linux-x64.tar.gz` — extract and run `./GuitarPracticeTimer` |
+            | Windows 10/11 (x64) | `GuitarPracticeTimer-win-x64.zip` - extract and run `GuitarPracticeTimer.exe` |
+            | Linux (x64) | `GuitarPracticeTimer-linux-x64.tar.gz` - extract and run `./GuitarPracticeTimer` |
 
-            Nothing to install and no .NET runtime to fetch first — everything is
+            Nothing to install and no .NET runtime to fetch first - everything is
             bundled into the one binary.
 
             ### Verifying this download
@@ -138,7 +138,7 @@ jobs:
             ### On first run
 
             Windows may ask you to confirm before opening a program it has not
-            seen many people run yet — choose *More info* → *Run anyway*. That
+            seen many people run yet - choose *More info* → *Run anyway*. That
             prompt reflects how widely a program has been downloaded so far,
             not anything found inside it.
 

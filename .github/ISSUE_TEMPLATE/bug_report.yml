@@ -42,11 +42,11 @@ body:
     attributes:
       label: Which mode was the app in?
       options:
-        - Practice — ready (not started)
-        - Practice — running
-        - Practice — paused
-        - Cool down — within the first 60 seconds (skip locked)
-        - Cool down — after 60 seconds (skip unlocked)
+        - Practice - ready (not started)
+        - Practice - running
+        - Practice - paused
+        - Cool down - within the first 60 seconds (skip locked)
+        - Cool down - after 60 seconds (skip unlocked)
         - During the transition between modes
         - Not sure
     validations:
@@ -67,7 +67,7 @@ body:
     id: windows-version
     attributes:
       label: Windows version
-      description: "`winver` gives you this — e.g. Windows 11 Pro 24H2 (26100.2033)"
+      description: "`winver` gives you this - e.g. Windows 11 Pro 24H2 (26100.2033)"
       placeholder: Windows 11 Pro 24H2
     validations:
       required: true
@@ -86,7 +86,7 @@ body:
     attributes:
       label: Display setup
       description: >
-        Only relevant for layout, scaling or rendering problems — display scaling
+        Only relevant for layout, scaling or rendering problems - display scaling
         percentage, resolution, and whether you're on multiple monitors.
       placeholder: "27\" 4K at 150% scaling, second monitor at 100%"
     validations:

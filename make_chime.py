@@ -5,8 +5,8 @@ same pair the original WPF build produced with Console.Beep. Console.Beep is
 Windows-only, so on every other platform the app plays this file instead.
 
 Each note is a fundamental plus two quiet harmonics under a short attack and
-an exponential decay, which reads as a chime rather than a test tone and — more
-importantly — starts and ends at zero, so there is no click at either edge.
+an exponential decay, which reads as a chime rather than a test tone and - more
+importantly - starts and ends at zero, so there is no click at either edge.
 """
 import math
 import os
