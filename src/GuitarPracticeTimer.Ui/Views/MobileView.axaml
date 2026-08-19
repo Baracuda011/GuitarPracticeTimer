@@ -26,7 +26,17 @@
                        HorizontalAlignment="Center"
                        Margin="0,0,0,4"/>
 
-            <views:TimerView Grid.Row="1"/>
+            <!-- VerticalAlignment is load-bearing. Stretched, TimerView fills the
+                 whole screen and its internal * row - the dial - swallows the
+                 slack, leaving a large gap above the buttons on a tall phone.
+                 Centred, it takes its natural height and the group stays
+                 together. The scroll viewer is insurance for short screens,
+                 landscape especially, where the content would otherwise clip. -->
+            <ScrollViewer Grid.Row="1"
+                          VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled">
+                <views:TimerView VerticalAlignment="Center"/>
+            </ScrollViewer>
         </Grid>
     </Border>
 </UserControl>
