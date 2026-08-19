@@ -25,6 +25,30 @@
     <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
   </PropertyGroup>
 
+  <!--
+    Release drops the x86_64 slice. A default build ships arm64-v8a (18 MB) and
+    x86_64 (19 MB) side by side, and x86_64 exists only for emulators and a
+    handful of Chromebooks - it doubled the download for every real phone. arm
+    is kept for older 32-bit devices.
+
+    Debug is left alone on purpose, so the app still installs on an x86_64
+    emulator during development. Set this only for Release, and never with
+    -p: on the command line: as a global property it leaks into the net10.0
+    Core and Ui references, which do not understand an android RID.
+  -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <!-- Default: both ARM slices, which is what the .aab wants - Play splits it
+         per device, so nobody downloads the slice they cannot run. -->
+    <RuntimeIdentifiers Condition="'$(Abi)' == ''">android-arm64;android-arm</RuntimeIdentifiers>
+
+    <!-- `-p:Abi=arm64` for the direct-download .apk, which has no store to split
+         it and would otherwise be twice the size. Abi is a harmless custom
+         property: it leaks to the Core and Ui references like any global
+         property, but they ignore it, whereas RuntimeIdentifiers would break
+         them. -->
+    <RuntimeIdentifiers Condition="'$(Abi)' == 'arm64'">android-arm64</RuntimeIdentifiers>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="12.1.1" />
     <PackageReference Include="Avalonia.Android" Version="12.1.1" />
