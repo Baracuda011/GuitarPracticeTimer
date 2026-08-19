@@ -18,7 +18,7 @@
             </Transitions>
         </Border.Transitions>
 
-        <Grid RowDefinitions="Auto,*" MaxWidth="460" HorizontalAlignment="Center">
+        <Grid RowDefinitions="Auto,*" HorizontalAlignment="Center">
             <TextBlock Grid.Row="0"
                        Text="Guitar Practice Timer"
                        FontSize="12"
@@ -26,16 +26,21 @@
                        HorizontalAlignment="Center"
                        Margin="0,0,0,4"/>
 
-            <!-- VerticalAlignment is load-bearing. Stretched, TimerView fills the
-                 whole screen and its internal * row - the dial - swallows the
-                 slack, leaving a large gap above the buttons on a tall phone.
-                 Centred, it takes its natural height and the group stays
-                 together. The scroll viewer is insurance for short screens,
-                 landscape especially, where the content would otherwise clip. -->
+            <!-- Centred rather than stretched: filling an 804dp screen lets the
+                 dial's * row swallow the slack and strands the buttons at the
+                 bottom. MinHeight buys back a deliberate amount of that slack
+                 so the group breathes; without it the layout collapses to its
+                 natural height and reads as cramped.
+
+                 MaxWidth and MinHeight are set from code-behind, because they
+                 have to invert in landscape: leaving a 460 cap and a 560 floor
+                 in place makes TimerView measure portrait-shaped however wide
+                 the screen is, and it never switches to its side-by-side
+                 arrangement. The scroll viewer is insurance for short screens. -->
             <ScrollViewer Grid.Row="1"
                           VerticalScrollBarVisibility="Auto"
                           HorizontalScrollBarVisibility="Disabled">
-                <views:TimerView VerticalAlignment="Center"/>
+                <views:TimerView Name="Timer" VerticalAlignment="Center"/>
             </ScrollViewer>
         </Grid>
     </Border>
