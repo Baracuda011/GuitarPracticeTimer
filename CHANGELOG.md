@@ -7,16 +7,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-Website and repository only. The app itself is unchanged since 1.0.0.
+## [1.1.0] - 2026-08-19
+
+**Android.** The timer now runs on a phone, on the same `Core` and `Ui`
+projects the desktop uses, so the rules that make the cooldown hard to escape
+are the same code on both.
 
 ### Added
 
+- **Android support (arm64).** Verified on a OnePlus NE2213 running Android 16:
+  the full practice-to-cooldown cycle, the chime, the colour cross-fade, the
+  60-second skip lock, and accurate timing across a locked screen.
+- A `.apk` on every release, for installing directly while the Play Store
+  listing is in review.
+- A splash screen drawn by the app: the dial with 3:00 inside, fading into the
+  timer over the same 550 ms the app uses for its own colour change.
+- A layout that rearranges in landscape, putting the dial beside the controls
+  instead of scrolling them off the bottom of the screen.
+- macOS is now built and started on a real Mac runner in CI on every push,
+  though nobody has yet seen it draw a window or heard it make a sound.
 - A project website at [guitarpracticetimer.com](https://guitarpracticetimer.com/),
   with an "Is this safe?" section explaining how to verify a download, support
-  links, and a thank-you page for supporters.
+  links, a privacy policy, and a thank-you page for supporters.
 - Search and social metadata: canonical URL, Open Graph and X cards,
   `SoftwareApplication` structured data, a sitemap, and a full icon set from
   `favicon.ico` through to a maskable Android icon.
+
+### Fixed
+
+- The Android build showed a blank first frame on a cold start. Layout
+  properties were being changed from inside a `SizeChanged` handler, which
+  invalidated measure mid-pass and left nothing drawn until something external
+  forced another one.
+
+### Notes
+
+- A cooldown that finishes while the app is in the background does not yet
+  chime or notify; Android suspends the timer. The clock is correct when you
+  return, because timing is deadline-based rather than tick-based.
+- The Android download is signed with a debug key, which sideloads normally but
+  is not accepted by Google Play. A release upload key is the remaining step
+  before submission.
 
 ## [1.0.0] - 2026-08-18
 
@@ -60,5 +91,6 @@ for Windows and Linux.
   `CODE_OF_CONDUCT.md`, `SECURITY.md`, `FUNDING.yml`, issue and pull request
   templates, and this changelog.
 
-[Unreleased]: https://github.com/Baracuda011/GuitarPracticeTimer/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/Baracuda011/GuitarPracticeTimer/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/Baracuda011/GuitarPracticeTimer/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/Baracuda011/GuitarPracticeTimer/releases/tag/v1.0.0
