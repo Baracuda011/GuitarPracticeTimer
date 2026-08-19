@@ -394,7 +394,7 @@
     <h2>Download</h2>
     <p>One file. Nothing to install, no runtime to fetch first.</p>
     <div class="buttons">
-      <a class="btn" href="https://github.com/Baracuda011/GuitarPracticeTimer/releases/latest/download/GuitarPracticeTimer-win-x64.zip">
+      <a class="btn" href="https://github.com/Baracuda011/GuitarPracticeTimer/releases/latest/download/GuitarPracticeTimer-win-x64.zip" data-ga-event="download_windows">
         Windows <small>x64 &middot; 16.6 MB</small></a>
       <a class="btn btn--ghost" href="https://github.com/Baracuda011/GuitarPracticeTimer/releases/latest/download/GuitarPracticeTimer-linux-x64.tar.gz">
         Linux <small>x64 &middot; 14.8 MB</small></a>
@@ -485,6 +485,16 @@ Get-FileHash *.zip -Algorithm SHA256 # Windows</code></pre>
     );
     observer.observe(rest);
   }
+
+  document.addEventListener('click', function (event) {
+    const link = event.target.closest('[data-ga-event]');
+
+    if (!link || typeof gtag !== 'function') {
+      return;
+    }
+
+    gtag('event', link.dataset.gaEvent);
+  });
 </script>
 </body>
 </html>
