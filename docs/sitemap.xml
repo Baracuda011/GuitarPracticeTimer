@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Only the landing page is listed. thank-you.html is deliberately excluded and
+  carries a noindex tag: it is a post-payment redirect target, not a page anyone
+  should arrive at from a search result.
+
+  This lives under /GuitarPracticeTimer/ rather than the domain root, so
+  crawlers will not discover it on their own. Submit the URL directly in Google
+  Search Console and Bing Webmaster Tools.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://baracuda011.github.io/GuitarPracticeTimer/</loc>
+    <lastmod>2026-08-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+  </url>
+</urlset>
