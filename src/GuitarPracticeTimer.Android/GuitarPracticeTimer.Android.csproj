@@ -49,6 +49,18 @@
     <RuntimeIdentifiers Condition="'$(Abi)' == 'arm64'">android-arm64</RuntimeIdentifiers>
   </PropertyGroup>
 
+  <!--
+    Release signing. Google Play refuses a debug-signed upload, so a real upload
+    key is needed before submission. Nothing secret lives here: the keystore path
+    and passwords arrive from outside, either as -p: arguments or as CI secrets,
+    and AndroidKeyStore only switches on once a keystore has actually been named.
+    Without one the build falls back to the debug key, which is fine for
+    sideloading and for CI. See publish/android/PLAY-STORE.md.
+  -->
+  <PropertyGroup Condition="'$(AndroidSigningKeyStore)' != ''">
+    <AndroidKeyStore>true</AndroidKeyStore>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="12.1.1" />
     <PackageReference Include="Avalonia.Android" Version="12.1.1" />
