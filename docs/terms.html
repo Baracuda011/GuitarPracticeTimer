@@ -14,6 +14,8 @@
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 
 <style>
+  /* Same tokens, measure and type scale as the landing page, so the site reads
+     as one document rather than a page and its appendices. */
   :root {
     --ground:   #11141A;
     --raised:   #171B23;
@@ -21,12 +23,18 @@
     --text:     #F2F3F7;
     --muted:    #8A8F9C;
     --hairline: #2A2E3A;
+
     --display: Georgia, "Iowan Old Style", "Times New Roman", serif;
     --body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     --mono: ui-monospace, "Cascadia Code", "SF Mono", Consolas, monospace;
+
+    --measure: 54rem;  /* the page container; content fills it */
   }
-  html, body, h1, h2, p, ul, li { margin: 0; padding: 0; box-sizing: border-box; }
+
+  * { box-sizing: border-box; }
+
   body {
+    margin: 0;
     background: var(--ground);
     color: var(--text);
     font-family: var(--body);
@@ -34,33 +42,45 @@
     line-height: 1.65;
     -webkit-font-smoothing: antialiased;
   }
-  main { max-width: 44rem; margin: 0 auto; padding: 4.5rem 1.5rem 6rem; }
+
+  .wrap {
+    max-width: var(--measure);
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  main { padding: 5.5rem 0 1rem; }
 
   .eyebrow {
     font-family: var(--mono); font-size: 0.7rem; font-weight: 700;
     letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent);
-    margin-bottom: 1.25rem;
+    margin: 0 0 1.25rem;
+  }
+
+  h1, h2 {
+    font-family: var(--display); font-weight: 400;
+    text-wrap: balance; letter-spacing: -0.015em;
   }
   h1 {
-    font-family: var(--display); font-weight: 400;
-    font-size: clamp(2.1rem, 6vw, 2.9rem); line-height: 1.08;
-    letter-spacing: -0.015em; margin-bottom: 1rem; text-wrap: balance;
+    font-size: clamp(2.3rem, 7vw, 3.4rem); line-height: 1.08;
+    margin: 0 0 1rem;
   }
   h2 {
-    font-family: var(--display); font-weight: 400;
-    font-size: 1.5rem; line-height: 1.2; margin: 2.75rem 0 0.85rem;
+    font-size: clamp(1.7rem, 4.5vw, 2.2rem); line-height: 1.15;
+    margin: 3.25rem 0 1rem;
   }
   h3 {
     font-family: var(--body); font-weight: 600;
-    font-size: 1rem; line-height: 1.3; margin: 1.75rem 0 0.6rem;
+    font-size: 1.02rem; line-height: 1.3; margin: 2rem 0 0.6rem;
     color: var(--text);
   }
-  p { margin-bottom: 1.1rem; text-wrap: pretty; }
-  ul { margin: 0 0 1.1rem 1.2rem; }
+
+  p { margin: 0 0 1.15rem; text-wrap: pretty; }
+  ul { margin: 0 0 1.15rem 1.2rem; padding: 0; }
   li { margin-bottom: 0.5rem; }
   .muted { color: var(--muted); }
-  a { color: var(--accent); text-underline-offset: 3px; }
-  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
 
   .callout {
     margin: 2rem 0;
@@ -71,24 +91,37 @@
   }
   .callout p:last-child { margin-bottom: 0; }
 
+  /* Sits on its own line above the heading it qualifies, so the heading keeps
+     the full measure and the type scale is not broken by an inline pill. */
   .pending {
-    display: inline-block;
+    display: block; width: fit-content;
     font-family: var(--mono); font-size: 0.68rem; font-weight: 700;
     letter-spacing: 0.08em; text-transform: uppercase;
     color: var(--ground); background: var(--accent);
     padding: 0.2rem 0.55rem; border-radius: 999px;
-    margin-bottom: 0.85rem;
+    margin: 3.25rem 0 0.7rem;
   }
+  .pending + h2 { margin-top: 0; }
 
-  .updated {
-    font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.05em;
-    color: var(--muted); margin-top: 3.5rem; padding-top: 1.5rem;
+  footer {
+    padding: 3.5rem 0 5rem;
+    margin-top: 3.5rem;
     border-top: 1px solid var(--hairline);
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+  }
+  footer p { margin-bottom: 0.5rem; }
+
+  @media (max-width: 34rem) {
+    main { padding: 4rem 0 1rem; }
   }
 </style>
 </head>
 <body>
 
+<div class="wrap">
 <main>
   <p class="eyebrow">Terms</p>
   <h1>Terms &amp; Conditions</h1>
@@ -112,7 +145,8 @@
     it will be free of bugs or fit for every purpose, and I'm not liable for
     any loss arising from using it.</p>
 
-  <h2>Premium subscription <span class="pending" style="display:block; width:fit-content; margin-bottom:0.5rem;">Not yet available</span></h2>
+  <p class="pending">Not yet available</p>
+  <h2>Premium subscription</h2>
   <p>Premium is planned but not released yet. These terms are published in
     advance, before launch, so anyone considering it can read the rules
     first rather than after paying. They will apply once Premium ships, and
@@ -175,9 +209,16 @@
     the <a href="https://github.com/Baracuda011/GuitarPracticeTimer">project's
     GitHub repository</a>.</p>
 
-  <p class="updated">Last updated 24 August 2026 &middot;
-    <a href="index.html">guitarpracticetimer.com</a></p>
 </main>
+
+<footer>
+  <p>Last updated 24 August 2026</p>
+  <p><a href="index.html">guitarpracticetimer.com</a> &middot;
+    <a href="https://github.com/Baracuda011/GuitarPracticeTimer">Source on GitHub</a> &middot;
+    <a href="privacy.html">Privacy</a></p>
+</footer>
+
+</div>
 
 </body>
 </html>
