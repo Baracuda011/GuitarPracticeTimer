@@ -1,0 +1,41 @@
+// Design tokens.
+//
+// The palettes are the app's own. The page starts where the app starts - in
+// the mint practice palette - and the cooldown palette is swapped in wholesale
+// exactly as the app does it, by replacing the custom properties rather than
+// restyling anything.
+
+// The cooldown palette, shared by two very different uses: the landing page
+// swaps into it while the cooldown section holds the viewport, and the
+// thank-you page sits in it permanently. Keeping it in one mixin means the
+// warm palette is defined once and cannot drift between the two.
+@mixin cooldown-palette {
+  --ground:   #2B1C14;
+  --raised:   #35241A;
+  --accent:   #E8A33D;
+  --muted:    #A2907F;
+  --hairline: #46321F;
+}
+
+:root {
+  // The app's own practice palette.
+  --ground:    #11141A;
+  --raised:    #171B23;
+  --accent:    #7FD1AE;
+  --text:      #F2F3F7;
+  --muted:     #8A8F9C;
+  --hairline:  #2A2E3A;
+  --on-accent: #0E1116;
+
+  --ease: cubic-bezier(0.65, 0, 0.35, 1);
+  --fade: 550ms; // the app cross-fades over exactly this
+
+  --display: Georgia, "Iowan Old Style", "Times New Roman", serif;
+  --body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: ui-monospace, "Cascadia Code", "SF Mono", Consolas, monospace;
+
+  --measure: 54rem;  // the page container; content fills it
+}
+
+// Driven by the scroll handler on the landing page.
+body.resting { @include cooldown-palette; }

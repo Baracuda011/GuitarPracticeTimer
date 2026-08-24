@@ -1,0 +1,56 @@
+// Element defaults and the shared type scale.
+//
+// Every page in the site uses this: the same 17px body, the same serif display
+// face for headings, the same measure. A page that needs to differ overrides
+// under its own body class rather than redefining the scale.
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--text);
+  font-family: var(--body);
+  font-size: 17px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color var(--fade) var(--ease),
+              color var(--fade) var(--ease);
+}
+
+// The page container. Content fills it, so this width is the single control
+// over line length across the whole site.
+.wrap {
+  max-width: var(--measure);
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+h1, h2 {
+  font-family: var(--display);
+  font-weight: 400;
+  text-wrap: balance;
+  letter-spacing: -0.015em;
+  margin: 0 0 1rem;
+}
+h1 { font-size: clamp(2.3rem, 7vw, 3.4rem); line-height: 1.08; }
+h2 { font-size: clamp(1.7rem, 4.5vw, 2.2rem); line-height: 1.15; }
+
+p { margin: 0 0 1.15rem; }
+p:last-child { margin-bottom: 0; }
+
+a {
+  color: var(--accent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  transition: color var(--fade) var(--ease);
+}
+a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition-duration: 1ms !important; }
+}

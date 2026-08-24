@@ -13,96 +13,9 @@
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 
-<style>
-  /* Same tokens, measure and type scale as the landing page, so the site reads
-     as one document rather than a page and its appendices. */
-  :root {
-    --ground:   #11141A;
-    --raised:   #171B23;
-    --accent:   #7FD1AE;
-    --text:     #F2F3F7;
-    --muted:    #8A8F9C;
-    --hairline: #2A2E3A;
-
-    --display: Georgia, "Iowan Old Style", "Times New Roman", serif;
-    --body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-    --mono: ui-monospace, "Cascadia Code", "SF Mono", Consolas, monospace;
-
-    --measure: 54rem;  /* the page container; content fills it */
-  }
-
-  * { box-sizing: border-box; }
-
-  body {
-    margin: 0;
-    background: var(--ground);
-    color: var(--text);
-    font-family: var(--body);
-    font-size: 17px;
-    line-height: 1.65;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  .wrap {
-    max-width: var(--measure);
-    margin: 0 auto;
-    padding: 0 1.5rem;
-  }
-
-  main { padding: 5.5rem 0 1rem; }
-
-  .eyebrow {
-    font-family: var(--mono); font-size: 0.7rem; font-weight: 700;
-    letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent);
-    margin: 0 0 1.25rem;
-  }
-
-  h1, h2 {
-    font-family: var(--display); font-weight: 400;
-    text-wrap: balance; letter-spacing: -0.015em;
-  }
-  h1 {
-    font-size: clamp(2.3rem, 7vw, 3.4rem); line-height: 1.08;
-    margin: 0 0 1rem;
-  }
-  h2 {
-    font-size: clamp(1.7rem, 4.5vw, 2.2rem); line-height: 1.15;
-    margin: 3.25rem 0 1rem;
-  }
-
-  p { margin: 0 0 1.15rem; text-wrap: pretty; }
-  ul { margin: 0 0 1.15rem 1.2rem; padding: 0; }
-  li { margin-bottom: 0.5rem; }
-  .muted { color: var(--muted); }
-  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 3px; }
-  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
-
-  .callout {
-    margin: 2rem 0;
-    padding: 1.35rem 1.5rem;
-    background: var(--raised);
-    border-radius: 10px;
-    border-left: 3px solid var(--accent);
-  }
-  .callout p:last-child { margin-bottom: 0; }
-
-  footer {
-    padding: 3.5rem 0 5rem;
-    margin-top: 3.5rem;
-    border-top: 1px solid var(--hairline);
-    font-family: var(--mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.05em;
-    color: var(--muted);
-  }
-  footer p { margin-bottom: 0.5rem; }
-
-  @media (max-width: 34rem) {
-    main { padding: 4rem 0 1rem; }
-  }
-</style>
+<link rel="stylesheet" href="app.main.css">
 </head>
-<body>
+<body class="legal">
 
 <div class="wrap">
 <main>

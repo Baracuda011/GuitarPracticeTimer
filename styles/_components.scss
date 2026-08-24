@@ -1,0 +1,130 @@
+// Pieces used on more than one page.
+
+// Mode label, set like the one in the app: mono, uppercase, wide, accented.
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 1.25rem;
+  transition: color var(--fade) var(--ease);
+}
+
+.lede {
+  font-size: 1.2rem;
+  line-height: 1.55;
+  color: var(--text);
+}
+
+.muted { color: var(--muted); transition: color var(--fade) var(--ease); }
+
+// Durations are set as clock readings wherever they appear.
+.clock {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+  transition: color var(--fade) var(--ease);
+}
+
+// ---- buttons ----
+
+.buttons { display: flex; flex-wrap: wrap; gap: 0.85rem; margin-top: 2rem; }
+
+.btn {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.85rem 1.4rem;
+  border-radius: 999px;
+  font-weight: 600;
+  text-decoration: none;
+  background: var(--accent);
+  color: var(--on-accent);
+  transition: background-color var(--fade) var(--ease), opacity 160ms ease;
+
+  &:hover { opacity: 0.86; }
+
+  // The size label under a download button.
+  small {
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    opacity: 0.72;
+  }
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--hairline);
+  transition: border-color var(--fade) var(--ease), background-color 160ms ease;
+
+  &:hover { background: rgb(255 255 255 / 0.06); opacity: 1; }
+}
+
+// The primary support action, set in the same uppercase mono as the mode
+// labels so it reads as the page's one loud element rather than a fourth
+// equal button.
+.btn--loud {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 1rem 1.6rem;
+}
+
+// ---- boxes ----
+
+// A raised panel with an accent edge, for the one claim on a page that most
+// needs to be read.
+.callout {
+  margin: 2rem 0;
+  padding: 1.35rem 1.5rem;
+  background: var(--raised);
+  border-radius: 10px;
+  border-left: 3px solid var(--accent);
+  transition: background-color var(--fade) var(--ease),
+              border-color var(--fade) var(--ease);
+
+  p:last-child { margin-bottom: 0; }
+}
+
+.caveat {
+  margin-top: 2.5rem;
+  padding: 1.35rem 1.5rem;
+  background: var(--raised);
+  border-radius: 10px;
+  font-size: 0.92rem;
+  transition: background-color var(--fade) var(--ease);
+
+  p { margin-bottom: 0.8rem; }
+}
+
+pre {
+  margin: 0.9rem 0 0;
+  padding: 0.9rem 1rem;
+  background: var(--raised);
+  border-radius: 8px;
+  // The command is long. It scrolls inside its own box; the page never does.
+  max-width: 100%;
+  overflow-x: auto;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--text);
+  transition: background-color var(--fade) var(--ease);
+
+  code { font: inherit; }
+}
+
+@media (max-width: 34rem) {
+  // On a phone a sideways-scrolling box hides the end of the command with no
+  // visible cue, which is a poor look in the section about verifying things.
+  // Wrap at spaces instead - the gh command already uses a \ continuation,
+  // and no single token is long enough to need breaking mid-word.
+  pre { white-space: pre-wrap; }
+}

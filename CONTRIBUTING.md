@@ -36,6 +36,22 @@ You need the [.NET 10 SDK](https://dotnet.microsoft.com/download). The desktop
 app builds and runs on Windows and Linux; macOS should work but is not tested.
 Python 3 is only needed if you change the icon or the chime.
 
+### The website
+
+The site in `docs/` is plain static HTML, but its stylesheet is generated.
+`docs/app.main.css` is compiled from the Sass sources in `styles/` and must not
+be edited directly:
+
+```bash
+npm install
+npm run css        # compile once
+npm run css:watch  # recompile on save
+```
+
+`docs/` is uploaded to the host verbatim, so the compiled CSS is committed
+alongside its source. CI recompiles and fails if the two have drifted, so
+commit the regenerated `docs/app.main.css` with any change to `styles/`.
+
 ## Before you open a pull request
 
 1. **Open an issue first** for anything beyond a typo or an obvious bug fix.

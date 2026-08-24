@@ -1,0 +1,137 @@
+// The landing page only.
+
+.hero {
+  padding-top: 6.5rem;
+
+  h1 { margin-bottom: 1.5rem; }
+}
+
+// ---- screenshots ----
+
+.shots {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  margin: 3rem 0 0;
+
+  // min-width:0 is load-bearing. Grid items default to min-width:auto, which
+  // refuses to shrink below the image's intrinsic 588px and blows the track
+  // wider than a phone viewport.
+  figure { margin: 0; min-width: 0; }
+
+  img {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 5%;
+    box-shadow: 0 18px 50px rgb(0 0 0 / 0.5);
+  }
+
+  figcaption {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 0.85rem;
+    transition: color var(--fade) var(--ease);
+  }
+}
+
+// ---- the cycle ----
+
+.cycle {
+  list-style: none;
+  margin: 2rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 1.6rem;
+
+  li {
+    display: grid;
+    grid-template-columns: 4.5rem 1fr;
+    gap: 1.25rem;
+    align-items: baseline;
+    min-width: 0;
+
+    > * { min-width: 0; }
+  }
+
+  .clock { font-size: 0.95rem; text-align: right; }
+}
+
+// ---- support ----
+
+// The ask. Sits directly above the buttons and carries the weight of the
+// lede, because it is the only place on the page that asks for anything.
+.ask {
+  font-size: 1.12rem;
+  line-height: 1.55;
+  text-wrap: pretty;
+  margin-top: 1.75rem;
+  padding-left: 1.1rem;
+  border-left: 2px solid var(--accent);
+  transition: border-color var(--fade) var(--ease);
+}
+
+// ---- citations ----
+
+.refs {
+  margin: 2rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 1.1rem;
+
+  li {
+    font-size: 0.86rem;
+    line-height: 1.5;
+    color: var(--muted);
+    padding-left: 1rem;
+    border-left: 2px solid var(--hairline);
+    transition: color var(--fade) var(--ease), border-color var(--fade) var(--ease);
+  }
+
+  .who { color: var(--text); }
+}
+
+// ---- verify ----
+
+.checks {
+  margin: 2rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 1.5rem;
+
+  // minmax(0, 1fr) rather than the default auto track, and min-width:0 on the
+  // items. An auto track sizes to its content's max-content width, and a grid
+  // item's default min-width:auto refuses to shrink below it - so a single long
+  // unbreakable line in a <pre> widened this row to 434px inside a 413px
+  // viewport and scrolled the whole page sideways.
+  li {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.3rem;
+    min-width: 0;
+
+    > * { min-width: 0; }
+  }
+
+  .k {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    transition: color var(--fade) var(--ease);
+  }
+}
+
+@media (max-width: 34rem) {
+  .shots { grid-template-columns: 1fr; gap: 2rem; }
+  .cycle li { grid-template-columns: 1fr; gap: 0.2rem; }
+  .cycle .clock { text-align: left; }
+}

@@ -1,0 +1,15 @@
+{
+  "name": "guitarpracticetimer-site",
+  "version": "1.1.0",
+  "private": true,
+  "description": "Build for the guitarpracticetimer.com stylesheet. The site itself is static HTML in docs/; this compiles styles/ into docs/app.main.css.",
+  "license": "MIT",
+  "scripts": {
+    "css": "sass styles/app.main.scss docs/app.main.css --style=compressed --no-source-map",
+    "css:watch": "sass --watch styles/app.main.scss docs/app.main.css --style=compressed --no-source-map",
+    "css:check": "sass styles/app.main.scss --style=compressed --no-source-map"
+  },
+  "devDependencies": {
+    "sass": "^1.103.1"
+  }
+}

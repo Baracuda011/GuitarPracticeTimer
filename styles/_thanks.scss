@@ -1,0 +1,64 @@
+@use "tokens";
+
+// The thank-you page.
+//
+// It sits permanently in the app's cooldown palette - the warm one. That is
+// deliberate: the cooldown is the app's moment of rest and reward, and this is
+// the page people reach after doing something generous. The landing page is
+// mint; this one is amber.
+//
+// It is also the one page that is deliberately narrower than the site measure.
+// There is a single short message here and nothing to scan, so it is set as a
+// centred column rather than a full-width document.
+
+body.thanks {
+  @include tokens.cooldown-palette;
+  --on-accent: #2A1A10;
+
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+
+  main {
+    width: 100%;
+    max-width: 34rem;
+    margin: 0 auto;
+    padding: 4rem 1.5rem;
+  }
+
+  h1 { font-size: clamp(2.2rem, 7vw, 3rem); margin: 0 0 1.25rem; }
+
+  p { text-wrap: pretty; }
+
+  .lede { font-size: 1.15rem; }
+
+  // A single-label button, unlike the download buttons on the landing page,
+  // so the label is centred rather than stretched.
+  .btn { align-items: center; padding: 0.85rem 1.5rem; }
+
+  .buttons { margin-top: 2.25rem; }
+
+  // The receipt note: quiet, factual, and the one thing someone might
+  // actually be wondering about right after paying.
+  .note {
+    margin: 2.25rem 0;
+    padding: 1.15rem 1.35rem;
+    background: var(--raised);
+    border-radius: 10px;
+    font-size: 0.92rem;
+    color: var(--muted);
+
+    strong { color: var(--text); font-weight: 600; }
+  }
+
+  footer {
+    margin-top: 3.5rem;
+    padding: 1.5rem 0 0;
+    border-top: 1px solid var(--hairline);
+    font-size: 0.7rem;
+
+    a { color: var(--muted); }
+  }
+
+  a:focus-visible { border-radius: 999px; }
+}

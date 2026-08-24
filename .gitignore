@@ -89,6 +89,11 @@ __pycache__/
 .venv/
 venv/
 
+## Node (the Sass build for the website's stylesheet)
+node_modules/
+.sass-cache/
+*.css.map
+
 ## OS cruft
 [Tt]humbs.db
 ehthumbs.db

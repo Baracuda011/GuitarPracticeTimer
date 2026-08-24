@@ -133,6 +133,37 @@ jobs:
           dotnet build src/GuitarPracticeTimer.Android/GuitarPracticeTimer.Android.csproj
           --configuration Release -warnaserror
 
+  stylesheet:
+    name: docs/app.main.css matches styles/
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install Sass
+        run: npm ci
+
+      # docs/ is uploaded to Azure verbatim, so the compiled stylesheet has to
+      # be committed rather than built at deploy time. That makes it possible
+      # to edit the CSS directly and have the SCSS silently stop being the
+      # source of truth. Recompiling and diffing is what stops that.
+      - name: Recompile and compare
+        run: |
+          npm run css
+          if ! git diff --exit-code --stat docs/app.main.css; then
+            echo
+            echo "docs/app.main.css is not what styles/ compiles to."
+            echo "Run 'npm run css' and commit the result."
+            exit 1
+          fi
+          echo "In sync."
+
   generators:
     name: Generated assets match their generators
     runs-on: ubuntu-latest
