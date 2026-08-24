@@ -117,3 +117,10 @@ SESSION-HANDOFF.md
 *.pfx
 keystore.properties
 signing.properties
+
+# Deployment tokens. The Azure Static Web Apps token deploys straight to
+# guitarpracticetimer.com, so it belongs in GitHub Actions secrets and
+# nowhere else.
+Azure token.txt
+*token*.txt
+*.token
