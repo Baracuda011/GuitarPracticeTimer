@@ -68,6 +68,85 @@ jobs:
           path: dist/
           if-no-files-found: error
 
+  macos:
+    name: Build ${{ matrix.rid }}
+    # A real Mac. Building the bundle needs no Apple tooling, but publishing a
+    # macOS binary and knowing it starts does.
+    runs-on: macos-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - rid: osx-arm64
+            arch: apple-silicon
+          - rid: osx-x64
+            arch: intel
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref_name }}
+
+      - name: Set up .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Publish
+        run: >
+          dotnet publish src/GuitarPracticeTimer.Desktop/GuitarPracticeTimer.Desktop.csproj
+          --configuration Release
+          --runtime ${{ matrix.rid }}
+          --output publish/${{ matrix.rid }}
+
+      - name: Build the .app bundle
+        run: >
+          python make_macos_app.py publish/${{ matrix.rid }}
+          --arch ${{ matrix.arch }}
+          --out dist
+
+      # Start the binary inside the bundle. Compiling proves very little on its
+      # own - the interesting failures happen when the .NET host, Skia and
+      # miniaudio dylibs load. There is no display on the runner, so this says
+      # "it starts and stays up", not "it looks right" and not "it makes a
+      # sound". Those still need a person in front of a Mac.
+      - name: Smoke test the bundle
+        run: |
+          APP="dist/GuitarPracticeTimer.app/Contents/MacOS/GuitarPracticeTimer"
+          test -x "$APP" || { echo "executable bit missing on $APP"; exit 1; }
+          "$APP" > app.log 2>&1 &
+          APP_PID=$!
+          sleep 12
+
+          if kill -0 "$APP_PID" 2>/dev/null; then
+            echo "Still running after 12s - startup succeeded."
+            kill "$APP_PID" 2>/dev/null || true
+            echo "--- output ---"; cat app.log || true
+          else
+            wait "$APP_PID"; STATUS=$?
+            echo "Exited early with status $STATUS"
+            echo "--- output ---"; cat app.log || true
+            exit 1
+          fi
+
+      # The .app itself is only needed for the smoke test; the tarball is what
+      # ships, and leaving the bundle in place would upload every file twice.
+      - name: Keep only the archive
+        run: rm -rf dist/GuitarPracticeTimer.app && ls -la dist
+
+      - name: Upload package
+        uses: actions/upload-artifact@v4
+        with:
+          name: package-${{ matrix.rid }}
+          path: dist/
+          if-no-files-found: error
+
   android:
     name: Build Android APK
     runs-on: ubuntu-latest
@@ -138,7 +217,7 @@ jobs:
 
   release:
     name: Attest, checksum and publish
-    needs: [build, android]
+    needs: [build, macos, android]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -182,12 +261,20 @@ jobs:
             | --- | --- |
             | Windows 10/11 (x64) | `GuitarPracticeTimer-win-x64.zip` - extract and run `GuitarPracticeTimer.exe` |
             | Linux (x64) | `GuitarPracticeTimer-linux-x64.tar.gz` - extract and run `./GuitarPracticeTimer` |
+            | macOS (Apple silicon) | `GuitarPracticeTimer-macos-apple-silicon.tar.gz` - unpack and open the app |
+            | macOS (Intel) | `GuitarPracticeTimer-macos-intel.tar.gz` - unpack and open the app |
             | Android (arm64) | `GuitarPracticeTimer-android-arm64.apk` - open it on the phone to install |
 
             The Android build is here for direct install while the Play Store
             listing is in review. Android will warn that it came from outside the
             Play Store; that is expected for any sideloaded app and is not a
-            report of anything found. macOS and iOS builds are planned.
+            report of anything found. An iOS build is planned.
+
+            **On macOS**, the app is not yet signed with an Apple Developer
+            certificate, so the first launch reports that macOS "could not
+            verify" it. Right-click the app and choose *Open* to get past that
+            once; it opens normally afterwards. Check the chip in  -> About
+            This Mac if you are unsure which of the two files you need.
 
             Nothing to install and no .NET runtime to fetch first - everything is
             bundled into the one binary.

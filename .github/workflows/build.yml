@@ -77,19 +77,28 @@ jobs:
         shell: bash
         run: du -sh publish/${{ matrix.rid }} && ls -la publish/${{ matrix.rid }}
 
+      # Build the same .app bundle the release does, so a change that breaks
+      # bundling is caught on the push that causes it rather than at tag time.
+      - name: Build the .app bundle
+        if: matrix.os == 'macos-latest'
+        shell: bash
+        run: python make_macos_app.py publish/${{ matrix.rid }} --arch apple-silicon --out bundle
+
       # Actually start it. Compiling for macOS proves very little on its own -
       # the interesting failures are at runtime, when the .NET host, Skia and
       # miniaudio dylibs load. The app is given a few seconds and then checked
       # for a pulse; if it had crashed on startup the process would be gone.
       #
       # There is no display on the runner, so the window is never drawn. This
-      # says "it starts and stays up", not "it looks right".
-      - name: Smoke test the macOS binary
+      # says "it starts and stays up", not "it looks right" and not "the chime
+      # can be heard" - both of those still need a person in front of a Mac.
+      - name: Smoke test the macOS bundle
         if: matrix.os == 'macos-latest'
         shell: bash
         run: |
-          chmod +x "publish/${{ matrix.rid }}/GuitarPracticeTimer"
-          "./publish/${{ matrix.rid }}/GuitarPracticeTimer" > app.log 2>&1 &
+          APP="bundle/GuitarPracticeTimer.app/Contents/MacOS/GuitarPracticeTimer"
+          test -x "$APP" || { echo "executable bit missing on $APP"; exit 1; }
+          "$APP" > app.log 2>&1 &
           APP_PID=$!
           sleep 12
 
@@ -109,6 +118,18 @@ jobs:
         with:
           name: GuitarPracticeTimer-${{ matrix.rid }}
           path: publish/${{ matrix.rid }}/
+          retention-days: 14
+          if-no-files-found: error
+
+      # The packaged bundle, separately, so a Mac can be tried from any push
+      # without cutting a release first. Download it from the run's Artifacts
+      # section; GitHub wraps it in a .zip, so it unpacks to the .tar.gz.
+      - name: Upload the macOS app
+        if: matrix.os == 'macos-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: GuitarPracticeTimer-macos-app
+          path: bundle/*.tar.gz
           retention-days: 14
           if-no-files-found: error
 

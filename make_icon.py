@@ -1,7 +1,11 @@
-"""Generates Assets/app.ico (pure stdlib: no Pillow needed).
+"""Generates Assets/app.ico and Assets/app.icns (pure stdlib: no Pillow needed).
 
 Draws a supersampled, anti-aliased timer mark: dark rounded square,
 mint progress ring with a gap at the top, and a clock hand.
+
+The .ico is for Windows; the .icns is the same mark for the macOS .app bundle,
+so both platforms show one icon drawn from one source rather than two that have
+to be kept in step by hand.
 """
 import math
 import os
@@ -12,8 +16,37 @@ BG = (0x15, 0x18, 0x21)
 RING = (0x7F, 0xD1, 0xAE)
 HAND = (0xEC, 0xEE, 0xF3)
 
-SS = 4  # supersample factor
 SIZES = [16, 24, 32, 48, 64, 128, 256]
+
+# macOS icon members, smallest first. The @2x entries carry the same pixels as
+# their plain counterpart of the same edge length - ic11 is "16pt at 2x", which
+# is a 32px image, exactly what icp5 holds. Rendering is done once per distinct
+# size and the blob is shared, which is also what iconutil does.
+ICNS_MEMBERS = [
+    (b"icp4", 16),     # 16pt
+    (b"icp5", 32),     # 32pt
+    (b"ic11", 32),     # 16pt @2x
+    (b"ic12", 64),     # 32pt @2x
+    (b"ic07", 128),    # 128pt
+    (b"ic08", 256),    # 256pt
+    (b"ic13", 256),    # 128pt @2x
+    (b"ic09", 512),    # 512pt
+    (b"ic14", 512),    # 256pt @2x
+    (b"ic10", 1024),   # 512pt @2x
+]
+
+ICNS_SIZES = sorted({size for _, size in ICNS_MEMBERS})
+
+
+def supersample(size):
+    """Anti-aliasing factor for one size.
+
+    4x everywhere it matters. The large macOS members drop to 2x because the
+    cost is quadratic - a 1024px icon at 4x means rendering 16.7M pixels in
+    pure Python - and at that resolution the edges are already smooth enough
+    that the difference is not visible.
+    """
+    return 4 if size <= 256 else 2
 
 
 def rounded_rect_inside(x, y, w, h, r):
@@ -25,7 +58,8 @@ def rounded_rect_inside(x, y, w, h, r):
 
 def render(size):
     """Returns a list of RGBA rows (each a bytearray) for one icon size."""
-    n = size * SS
+    ss = supersample(size)
+    n = size * ss
     c = n / 2.0
     radius_corner = n * 0.22
     ring_r = n * 0.315
@@ -65,15 +99,15 @@ def render(size):
             hi[o + 2] = b
             hi[o + 3] = 255
 
-    # Box-downsample SSxSS blocks to the target size.
+    # Box-downsample ss*ss blocks to the target size.
     rows = []
     for y in range(size):
         out = bytearray(size * 4)
         for x in range(size):
             ar = ag = ab = aa = 0
-            for sy in range(SS):
-                base = ((y * SS + sy) * n + x * SS) * 4
-                for sx in range(SS):
+            for sy in range(ss):
+                base = ((y * ss + sy) * n + x * ss) * 4
+                for sx in range(ss):
                     o = base + sx * 4
                     a = hi[o + 3]
                     ar += hi[o] * a
@@ -85,7 +119,7 @@ def render(size):
                 out[o] = ar // aa
                 out[o + 1] = ag // aa
                 out[o + 2] = ab // aa
-                out[o + 3] = aa // (SS * SS)
+                out[o + 3] = aa // (ss * ss)
         rows.append(out)
     return rows
 
@@ -104,24 +138,52 @@ def png(rows, size):
     )
 
 
-def main():
-    images = [png(render(s), s) for s in SIZES]
-
+def ico(images):
+    """Windows .ico containing every frame in SIZES."""
     header = struct.pack("<HHH", 0, 1, len(images))
     offset = len(header) + 16 * len(images)
     entries, blobs = b"", b""
+
     for size, blob in zip(SIZES, images):
+        # 0 means 256 in an .ico directory entry; the field is a single byte.
         dim = 0 if size >= 256 else size
         entries += struct.pack("<BBBBHHII", dim, dim, 0, 0, 1, 32, len(blob), offset)
         offset += len(blob)
         blobs += blob
 
+    return header + entries + blobs
+
+
+def icns(by_size):
+    """macOS .icns built from {size: png_bytes}.
+
+    The container is deliberately simple: a magic word, the total length, then
+    one record per member - a four-character type, the record length including
+    its own 8-byte header, and the PNG itself.
+    """
+    body = b""
+    for tag, size in ICNS_MEMBERS:
+        blob = by_size[size]
+        body += tag + struct.pack(">I", len(blob) + 8) + blob
+
+    return b"icns" + struct.pack(">I", len(body) + 8) + body
+
+
+def main():
     out_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Assets")
     os.makedirs(out_dir, exist_ok=True)
-    path = os.path.join(out_dir, "app.ico")
-    with open(path, "wb") as fh:
-        fh.write(header + entries + blobs)
-    print(f"wrote {path} ({os.path.getsize(path)} bytes)")
+
+    # Render each distinct size once; both containers draw from the same frames.
+    by_size = {s: png(render(s), s) for s in sorted(set(SIZES) | set(ICNS_SIZES))}
+
+    for name, blob in (
+        ("app.ico", ico([by_size[s] for s in SIZES])),
+        ("app.icns", icns(by_size)),
+    ):
+        path = os.path.join(out_dir, name)
+        with open(path, "wb") as fh:
+            fh.write(blob)
+        print(f"wrote {path} ({os.path.getsize(path)} bytes)")
 
 
 if __name__ == "__main__":

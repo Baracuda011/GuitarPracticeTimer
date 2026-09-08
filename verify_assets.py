@@ -59,15 +59,38 @@ def ico_frames(blob):
     return frames
 
 
+def icns_members(blob):
+    """Every member of an .icns, as (type, (size, pixels))."""
+    if blob[:4] != b"icns":
+        raise ValueError("not an icns")
+
+    (declared,) = struct.unpack(">I", blob[4:8])
+    if declared != len(blob):
+        raise ValueError(f"icns header claims {declared} bytes, file is {len(blob)}")
+
+    members = []
+    pos = 8
+
+    while pos < len(blob):
+        tag = blob[pos:pos + 4]
+        (length,) = struct.unpack(">I", blob[pos + 4:pos + 8])
+        members.append((tag, png_pixels(blob[pos + 8:pos + length])))
+        pos += length
+
+    return members
+
+
+def expected_pixels(size):
+    """What make_icon.render produces for one size, as raw decoded PNG bytes."""
+    return zlib.decompress(zlib.compress(
+        b"".join(b"\x00" + bytes(row) for row in make_icon.render(size))))
+
+
 def check_icon():
     with open("Assets/app.ico", "rb") as fh:
         committed = ico_frames(fh.read())
 
-    expected = [
-        ((size, size), zlib.decompress(zlib.compress(
-            b"".join(b"\x00" + bytes(row) for row in make_icon.render(size)))))
-        for size in make_icon.SIZES
-    ]
+    expected = [((size, size), expected_pixels(size)) for size in make_icon.SIZES]
 
     if len(committed) != len(expected):
         return f"icon has {len(committed)} frames, generator produces {len(expected)}"
@@ -77,6 +100,34 @@ def check_icon():
             return f"icon frame is {got_size}, generator produces {want_size}"
         if got_px != want_px:
             return f"icon frame {got_size[0]}px does not match make_icon.py"
+
+    return None
+
+
+def check_icns():
+    with open("Assets/app.icns", "rb") as fh:
+        committed = icns_members(fh.read())
+
+    if len(committed) != len(make_icon.ICNS_MEMBERS):
+        return (f"icns has {len(committed)} members, "
+                f"generator produces {len(make_icon.ICNS_MEMBERS)}")
+
+    # Render each distinct size once - several members share the same pixels.
+    cache = {}
+
+    for (got_tag, (got_size, got_px)), (want_tag, want_edge) in zip(
+            committed, make_icon.ICNS_MEMBERS):
+        if got_tag != want_tag:
+            return (f"icns member is {got_tag.decode()}, "
+                    f"generator produces {want_tag.decode()}")
+        if got_size != (want_edge, want_edge):
+            return (f"icns member {got_tag.decode()} is {got_size}, "
+                    f"generator produces {(want_edge, want_edge)}")
+
+        if want_edge not in cache:
+            cache[want_edge] = expected_pixels(want_edge)
+        if got_px != cache[want_edge]:
+            return f"icns member {got_tag.decode()} does not match make_icon.py"
 
     return None
 
@@ -107,7 +158,8 @@ def safely(check):
 
 
 def main():
-    problems = [p for p in (safely(check_icon), safely(check_chime)) if p]
+    checks = (safely(check_icon), safely(check_icns), safely(check_chime))
+    problems = [p for p in checks if p]
 
     if problems:
         for p in problems:
@@ -116,7 +168,8 @@ def main():
               "then commit the result.", file=sys.stderr)
         return 1
 
-    print("Assets/app.ico and Assets/chime.wav both match their generators.")
+    print("Assets/app.ico, Assets/app.icns and Assets/chime.wav "
+          "all match their generators.")
     return 0
 
 
