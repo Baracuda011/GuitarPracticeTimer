@@ -241,11 +241,19 @@ Get-FileHash *.zip -Algorithm SHA256 # Windows</code></pre>
           simply no code that could send any.</span>
       </li>
       <li>
-        <span class="k">On first run</span>
+        <span class="k">Windows on first run</span>
         <span>Windows may ask you to confirm before opening a program it hasn't seen many
           people run yet - choose <em>More info</em>, then <em>Run anyway</em>. That
           prompt reflects how widely a program has been downloaded so far, not anything
           found inside it.</span>
+      </li>
+      <li>
+        <span class="k">macOS on first run</span>
+        <span>macOS says it cannot verify the developer. Right-click the app and choose
+          <em>Open</em>, then <em>Open</em> again - a plain double-click gives a box with
+          no way forward, and right-clicking is what offers the choice. It asks once, and
+          opens normally from then on. That message means the build carries no paid Apple
+          certificate yet; it is not a report of anything found inside it.</span>
       </li>
     </ul>
   </section>
