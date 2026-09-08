@@ -69,18 +69,10 @@ jobs:
           if-no-files-found: error
 
   macos:
-    name: Build ${{ matrix.rid }}
+    name: Build macOS (universal)
     # A real Mac. Building the bundle needs no Apple tooling, but publishing a
-    # macOS binary and knowing it starts does.
+    # macOS binary, checking it with lipo and knowing it starts all do.
     runs-on: macos-latest
-    strategy:
-      fail-fast: true
-      matrix:
-        include:
-          - rid: osx-arm64
-            arch: apple-silicon
-          - rid: osx-x64
-            arch: intel
 
     steps:
       - name: Check out
@@ -98,18 +90,32 @@ jobs:
         with:
           python-version: "3.x"
 
-      - name: Publish
-        run: >
-          dotnet publish src/GuitarPracticeTimer.Desktop/GuitarPracticeTimer.Desktop.csproj
-          --configuration Release
-          --runtime ${{ matrix.rid }}
-          --output publish/${{ matrix.rid }}
+      # Both architectures, merged below into one download. Two separate files
+      # would mean asking every visitor which Mac they own.
+      - name: Publish both architectures
+        run: |
+          for rid in osx-arm64 osx-x64; do
+            dotnet publish src/GuitarPracticeTimer.Desktop/GuitarPracticeTimer.Desktop.csproj \
+              --configuration Release --runtime "$rid" --output "publish/$rid"
+          done
 
-      - name: Build the .app bundle
+      - name: Build the universal .app bundle
         run: >
-          python make_macos_app.py publish/${{ matrix.rid }}
-          --arch ${{ matrix.arch }}
+          python make_macos_app.py publish/osx-arm64 publish/osx-x64
+          --arch universal
           --out dist
+
+      # The universal binary is assembled in Python so the packaging works off
+      # a Mac too. Here, where a Mac is available, Apple's own tool checks it:
+      # verify_arch fails the build unless both slices are present and loadable.
+      - name: Verify the universal binary with lipo
+        run: |
+          for f in dist/GuitarPracticeTimer.app/Contents/MacOS/GuitarPracticeTimer \
+                   dist/GuitarPracticeTimer.app/Contents/MacOS/libminiaudio.dylib; do
+            echo "--- $f"
+            lipo -info "$f"
+            lipo -verify_arch x86_64 arm64 "$f"
+          done
 
       # Start the binary inside the bundle. Compiling proves very little on its
       # own - the interesting failures happen when the .NET host, Skia and
@@ -143,7 +149,7 @@ jobs:
       - name: Upload package
         uses: actions/upload-artifact@v4
         with:
-          name: package-${{ matrix.rid }}
+          name: package-macos
           path: dist/
           if-no-files-found: error
 
@@ -261,8 +267,7 @@ jobs:
             | --- | --- |
             | Windows 10/11 (x64) | `GuitarPracticeTimer-win-x64.zip` - extract and run `GuitarPracticeTimer.exe` |
             | Linux (x64) | `GuitarPracticeTimer-linux-x64.tar.gz` - extract and run `./GuitarPracticeTimer` |
-            | macOS (Apple silicon) | `GuitarPracticeTimer-macos-apple-silicon.tar.gz` - unpack and open the app |
-            | macOS (Intel) | `GuitarPracticeTimer-macos-intel.tar.gz` - unpack and open the app |
+            | macOS (Apple silicon or Intel) | `GuitarPracticeTimer-macos-universal.tar.gz` - unpack, then right-click the app and choose *Open* |
             | Android (arm64) | `GuitarPracticeTimer-android-arm64.apk` - open it on the phone to install |
 
             The Android build is here for direct install while the Play Store
@@ -273,8 +278,9 @@ jobs:
             **On macOS**, the app is not yet signed with an Apple Developer
             certificate, so the first launch reports that macOS "could not
             verify" it. Right-click the app and choose *Open* to get past that
-            once; it opens normally afterwards. Check the chip in  -> About
-            This Mac if you are unsure which of the two files you need.
+            once; a plain double-click offers no way forward. It opens normally
+            afterwards. The macOS download is a universal binary and runs on
+            both Apple silicon and Intel, so there is only one file to pick.
 
             Nothing to install and no .NET runtime to fetch first - everything is
             bundled into the one binary.

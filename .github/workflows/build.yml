@@ -77,12 +77,35 @@ jobs:
         shell: bash
         run: du -sh publish/${{ matrix.rid }} && ls -la publish/${{ matrix.rid }}
 
-      # Build the same .app bundle the release does, so a change that breaks
-      # bundling is caught on the push that causes it rather than at tag time.
-      - name: Build the .app bundle
+      # The release ships one universal download, so build the same thing here
+      # rather than a single architecture. A change that breaks bundling or the
+      # fat-binary merge is then caught on the push that causes it.
+      - name: Publish the second architecture
         if: matrix.os == 'macos-latest'
         shell: bash
-        run: python make_macos_app.py publish/${{ matrix.rid }} --arch apple-silicon --out bundle
+        run: >
+          dotnet publish src/GuitarPracticeTimer.Desktop/GuitarPracticeTimer.Desktop.csproj
+          --configuration Release --runtime osx-x64 --output publish/osx-x64
+
+      - name: Build the universal .app bundle
+        if: matrix.os == 'macos-latest'
+        shell: bash
+        run: >
+          python make_macos_app.py publish/osx-arm64 publish/osx-x64
+          --arch universal --out bundle
+
+      # make_macos_app.py assembles the universal binary itself, so that the
+      # packaging runs anywhere. On a Mac, Apple's own tool gets to check it.
+      - name: Verify the universal binary with lipo
+        if: matrix.os == 'macos-latest'
+        shell: bash
+        run: |
+          for f in bundle/GuitarPracticeTimer.app/Contents/MacOS/GuitarPracticeTimer \
+                   bundle/GuitarPracticeTimer.app/Contents/MacOS/libminiaudio.dylib; do
+            echo "--- $f"
+            lipo -info "$f"
+            lipo -verify_arch x86_64 arm64 "$f"
+          done
 
       # Actually start it. Compiling for macOS proves very little on its own -
       # the interesting failures are at runtime, when the .NET host, Skia and
