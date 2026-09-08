@@ -50,6 +50,15 @@ jobs:
         with:
           dotnet-version: "10.0.x"
 
+      # macOS packages the .app with make_macos_app.py. The runner images carry
+      # python3 but not always a bare `python`, so name the version wanted
+      # rather than relying on what happens to be on PATH.
+      - name: Set up Python
+        if: matrix.os == 'macos-latest'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
       # Named projects rather than the solution on purpose: the solution now
       # contains a net10.0-android head, and building it needs the Android
       # workload, which these runners do not have. The android job below
@@ -90,9 +99,10 @@ jobs:
       - name: Build the universal .app bundle
         if: matrix.os == 'macos-latest'
         shell: bash
-        run: >
-          python make_macos_app.py publish/osx-arm64 publish/osx-x64
-          --arch universal --out bundle
+        run: |
+          python --version
+          python make_macos_app.py publish/osx-arm64 publish/osx-x64 \
+            --arch universal --out bundle
 
       # make_macos_app.py assembles the universal binary itself, so that the
       # packaging runs anywhere. On a Mac, Apple's own tool gets to check it.
