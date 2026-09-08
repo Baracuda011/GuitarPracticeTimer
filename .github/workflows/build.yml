@@ -106,6 +106,10 @@ jobs:
 
       # make_macos_app.py assembles the universal binary itself, so that the
       # packaging runs anywhere. On a Mac, Apple's own tool gets to check it.
+      #
+      # The input file goes before -verify_arch, not after: -verify_arch takes
+      # a list of architectures and swallows every argument that follows it, so
+      # a trailing path is read as the name of an architecture.
       - name: Verify the universal binary with lipo
         if: matrix.os == 'macos-latest'
         shell: bash
@@ -114,7 +118,8 @@ jobs:
                    bundle/GuitarPracticeTimer.app/Contents/MacOS/libminiaudio.dylib; do
             echo "--- $f"
             lipo -info "$f"
-            lipo -verify_arch x86_64 arm64 "$f"
+            lipo "$f" -verify_arch x86_64 arm64
+            echo "    both slices present and loadable"
           done
 
       # Actually start it. Compiling for macOS proves very little on its own -

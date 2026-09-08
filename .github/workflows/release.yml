@@ -108,13 +108,18 @@ jobs:
       # The universal binary is assembled in Python so the packaging works off
       # a Mac too. Here, where a Mac is available, Apple's own tool checks it:
       # verify_arch fails the build unless both slices are present and loadable.
+      #
+      # The input file goes before -verify_arch, not after: -verify_arch takes
+      # a list of architectures and swallows every argument that follows it, so
+      # a trailing path is read as the name of an architecture.
       - name: Verify the universal binary with lipo
         run: |
           for f in dist/GuitarPracticeTimer.app/Contents/MacOS/GuitarPracticeTimer \
                    dist/GuitarPracticeTimer.app/Contents/MacOS/libminiaudio.dylib; do
             echo "--- $f"
             lipo -info "$f"
-            lipo -verify_arch x86_64 arm64 "$f"
+            lipo "$f" -verify_arch x86_64 arm64
+            echo "    both slices present and loadable"
           done
 
       # Start the binary inside the bundle. Compiling proves very little on its
