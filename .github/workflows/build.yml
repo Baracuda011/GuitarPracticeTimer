@@ -137,7 +137,7 @@ jobs:
           fi
 
       - name: Upload build artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: GuitarPracticeTimer-${{ matrix.rid }}
           path: publish/${{ matrix.rid }}/
@@ -149,7 +149,7 @@ jobs:
       # section; GitHub wraps it in a .zip, so it unpacks to the .tar.gz.
       - name: Upload the macOS app
         if: matrix.os == 'macos-latest'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: GuitarPracticeTimer-macos-app
           path: bundle/*.tar.gz
